@@ -1,3 +1,5 @@
+import os
+
 import pygame as pg
 
 from vars import *
@@ -8,17 +10,33 @@ class Board:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.board = [[0] * width for _ in range(height)]
+        self.board = [[0x000000] * width for _ in range(height)]
         # значения по умолчанию
         self.dx = 10
         self.dy = 10
         self.cell_size = 50
+        self.images = {}
 
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
         self.dx = left
         self.dy = top
         self.cell_size = cell_size
+
+    def load_images(self, colorkey=None):
+        for filename in os.listdir(os.path.join('data', 'colors')):
+            fullname = os.path.join('data', 'colors', filename)
+            if not os.path.isfile(fullname):
+                continue
+            image = pg.image.load(fullname)
+            if colorkey is not None:
+                image = image.convert()
+                if colorkey == -1:
+                    colorkey = image.get_at((0, 0))
+                image.set_colorkey(colorkey)
+            else:
+                image = image.convert_alpha()
+            self.images[filename.split('.')[0]] = image
 
     def render(self, screen):
         for y in range(self.height):
@@ -46,6 +64,8 @@ def main() -> None:
     screen = pg.display.set_mode(size)
     board = Board(5, 5)
     board.set_view(25, 125, 50)
+    board.load_images()
+    print(board.images)
     running = True
     while running:
         for event in pg.event.get():
@@ -55,7 +75,7 @@ def main() -> None:
                 mouse_pos = event.pos
                 board.get_click(mouse_pos)
         screen.fill('#000000')
-        text1 = getFont(26).render('Level 0', True, pg.Color('#ffffff'))
+        text1 = get_font(26).render('Level 0', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
         board.render(screen)
         pg.display.flip()
