@@ -59,21 +59,33 @@ class Board:
         self.board[y][x] = new_tile_type
         Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
 
-    def check_selected(self) -> list[tuple[int, int]]:
+    def selected_tiles(self) -> list[tuple[int, int]]:
         if self.pt1 is None or self.pt2 is None or self.pt1 == self.pt2:
             return []
-        range_x = range(min(self.pt1[0], self.pt2[0]), max(self.pt1[0], self.pt2[0]) + 1)
-        range_y = range(min(self.pt1[1], self.pt2[1]), max(self.pt1[1], self.pt2[1]) + 1)
+        x_sign, y_sign = -1 if self.pt1[0] > self.pt2[0] else 1, -1 if self.pt1[1] > self.pt2[1] else 1
+        x_vals, y_vals = sorted((self.pt1[0], self.pt2[0]))[::x_sign], sorted((self.pt1[1], self.pt2[1]))[::y_sign]
+        range_x, range_y = [*range(x_vals[0], x_vals[1] + x_sign, x_sign)], [*range(y_vals[0], y_vals[1] + y_sign, y_sign)]
+        print(range_x, range_y)
         return ([(self.pt1[0], y) for y in range_y] if self.pt1[0] == self.pt2[0] else
                 [(x, self.pt1[1]) for x in range_x] if self.pt1[1] == self.pt2[1] else
                 [(x, y) for x, y in zip(range_x, range_y)] if abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1]) else [])
 
+    def check_tiles(self):
+        selected_tiles = self.selected_tiles()
+        return len(selected_tiles) > 1 and len({self.board[y][x] for x, y in selected_tiles if self.board[y][x] != '000000'}) == 1
+
+    def cut_tiles(self, images):
+        for tile in self.selected_tiles():
+            self.change_tile('000000', tile[0], tile[1], images)
+        self.pt1 = self.pt2 = None
+
     def draw_selected(self, screen):
-        if self.pt2 is None or self.pt1 is None or self.pt1 == self.pt2:
+        if self.pt1 is None or self.pt2 is None or self.pt1 == self.pt2:
             return
-        pg.draw.line(screen, pg.Color('#00ff00'
-                                              if self.pt1[0] == self.pt2[0] or self.pt1[1] == self.pt2[1] or
-                                                 abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1]) else '#ff0000'),
+        color = '#00ff00' if (self.check_tiles() and
+                              (self.pt1[0] == self.pt2[0] or self.pt1[1] == self.pt2[1] or abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1])))\
+            else '#ff0000'
+        pg.draw.line(screen, pg.Color(color),
                      ((self.pt1[0] + .5) * self.cell_size + self.dx, (self.pt1[1] + .5) * self.cell_size + self.dy),
                      ((self.pt2[0] + .5) * self.cell_size + self.dx, (self.pt2[1] + .5) * self.cell_size + self.dy), 5)
 
@@ -132,6 +144,9 @@ def main() -> None:
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 2:
+                    board.cut_tiles(images)
+                    continue
                 clicked_tile = board.get_click(event.pos)
                 if clicked_tile is None:
                     continue
@@ -141,10 +156,12 @@ def main() -> None:
                     board.pt1 = clicked_tile
                 if event.button == 3:
                     board.pt2 = clicked_tile
-                print(board.check_selected())
+                print(board.selected_tiles())
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     board.pt1 = board.pt2 = None
+                if event.key == pg.K_SPACE and board.check_tiles():
+                    board.cut_tiles(images)
         screen.fill('#000000')
         text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
