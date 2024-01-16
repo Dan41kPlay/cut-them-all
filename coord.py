@@ -1,5 +1,5 @@
 import os
-from time import sleep
+from time import sleep, perf_counter
 
 import pygame as pg
 
@@ -113,7 +113,7 @@ def main() -> None:
         current_level[0] = 0
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'{game_name} - Level {current_level}')
+    pg.display.set_caption(f'{game_name} - Level {current_level[0]}')
     board = Board(5, 5)
     board.set_view(25, 125, 50)
     images = {}
@@ -124,12 +124,18 @@ def main() -> None:
         image = pg.image.load(fullname).convert_alpha()
         images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
     board.generate_level(load_level(current_level[0]), images)
+    second, seconds = perf_counter(), 0
+    text1 = get_font(25).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
+    text2 = get_font(20).render(f'Restart', True, pg.Color('#ff0000'))
+    text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
     running = True
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
+                if 160 < event.pos[0] < 285 and 20 < event.pos[1] < 70:
+                    main()
                 if event.button == 2 and board.check_tiles():
                     board.cut_tiles(images)
                     continue
@@ -147,12 +153,15 @@ def main() -> None:
                     board.pt1 = board.pt2 = None
                 if event.key == pg.K_SPACE and board.check_tiles():
                     board.cut_tiles(images)
-        screen.fill('#000000')
-        text1 = get_font(26).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
+        if perf_counter() - second >= 1:
+            second = perf_counter()
+            seconds += 1
+        screen.fill(pg.Color('#000000'))
         screen.blit(text1, (25, 25))
+        text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
+        screen.blit(text4, (177, 60))
         if board.check_win():
-            text2 = get_font(26).render('completed!', True, pg.Color('#00ffff'))
-            screen.blit(text2, (25, 60))
+            screen.blit(text3, (25, 60))
             current_level[0] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(str(current_level[0]))
@@ -162,6 +171,8 @@ def main() -> None:
         else:
             sprite_group.draw(screen)
             board.render(screen)
+            pg.draw.rect(screen, pg.Color('#222222'), (165, 27.5, 115, 35), border_radius=15)
+            screen.blit(text2, (175, 30))
         board.draw_selected(screen)
         pg.display.flip()
     pgquit()
