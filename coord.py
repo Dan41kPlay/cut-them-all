@@ -6,14 +6,6 @@ import pygame as pg
 from vars import *
 
 
-def proverka(pt1, pt2, screen):
-    if pt2 is None or pt1 is None:
-        return
-    if pt2[0] == pt1[0] or pt2[1] == pt1[1] or abs(pt2[0] - pt1[0]) == abs(pt1[1] - pt2[1]):
-        pg.draw.line(screen, pg.Color('#ff00ff'), (pt1[0] * 50 + 50, pt1[1] * 50 + 150), (pt2[0] * 50 + 50, pt2[1] * 50 + 150), 5)
-    print(pt1, pt2)
-
-
 def load_level(level):
     with open(os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]
@@ -66,7 +58,6 @@ class Board:
         x_sign, y_sign = -1 if self.pt1[0] > self.pt2[0] else 1, -1 if self.pt1[1] > self.pt2[1] else 1
         x_vals, y_vals = sorted((self.pt1[0], self.pt2[0]))[::x_sign], sorted((self.pt1[1], self.pt2[1]))[::y_sign]
         range_x, range_y = [*range(x_vals[0], x_vals[1] + x_sign, x_sign)], [*range(y_vals[0], y_vals[1] + y_sign, y_sign)]
-        print(range_x, range_y)
         return ([(self.pt1[0], y) for y in range_y] if self.pt1[0] == self.pt2[0] else
                 [(x, self.pt1[1]) for x in range_x] if self.pt1[1] == self.pt2[1] else
                 [(x, y) for x, y in zip(range_x, range_y)] if abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1]) else [])
@@ -151,7 +142,6 @@ def main() -> None:
                     board.pt1 = clicked_tile
                 if event.button == 3:
                     board.pt2 = clicked_tile
-                print(board.selected_tiles())
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     board.pt1 = board.pt2 = None
