@@ -1,4 +1,5 @@
 import os
+from time import sleep
 
 import pygame as pg
 
@@ -117,27 +118,21 @@ class Board:
 
 
 def main() -> None:
+    if current_level[0] > level_amount:
+        current_level[0] = 0
     size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(game_name)
     board = Board(5, 5)
     board.set_view(25, 125, 50)
-    colorkey = None
     images = {}
     for filename in os.listdir(COLORS_PATH):
         fullname = os.path.join(COLORS_PATH, filename)
         if not os.path.isfile(fullname):
             continue
-        image = pg.image.load(fullname)
-        if colorkey is not None:
-            image = image.convert()
-            if colorkey == -1:
-                colorkey = image.get_at((0, 0))
-            image.set_colorkey(colorkey)
-        else:
-            image = image.convert_alpha()
+        image = pg.image.load(fullname).convert_alpha()
         images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
-    board.generate_level(load_level(current_level), images)
+    board.generate_level(load_level(current_level[0]), images)
     running = True
     while running:
         for event in pg.event.get():
@@ -163,11 +158,17 @@ def main() -> None:
                 if event.key == pg.K_SPACE and board.check_tiles():
                     board.cut_tiles(images)
         screen.fill('#000000')
-        text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
+        text1 = get_font(26).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
         if board.check_win():
             text2 = get_font(26).render('completed!', True, pg.Color('#00ffff'))
             screen.blit(text2, (25, 60))
+            current_level[0] += 1
+            with open(CUR_LEVEL_PATH, 'w') as file:
+                file.write(str(current_level[0]))
+            pg.display.flip()
+            sleep(2)
+            main()
         else:
             sprite_group.draw(screen)
             board.render(screen)
