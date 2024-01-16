@@ -1,7 +1,7 @@
 import pygame as pg
 
-from . import level_display
 from .vars import *
+from . import level_display
 
 
 def main_menu():
