@@ -182,7 +182,7 @@ def main(go_to=None) -> None:
                 screen.blit(im, rect)
                 pg.display.update()
                 sleep(0.001)
-            main()
+            main(go_to)
         else:
             sprite_group.draw(screen)
             board.render(screen)
