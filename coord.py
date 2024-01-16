@@ -1,4 +1,5 @@
-import pygame
+import pygame as pg
+
 
 class Board:
     # создание поля
@@ -20,7 +21,7 @@ class Board:
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                pygame.draw.rect(screen, pygame.Color(255, 255, 255), (
+                pg.draw.rect(screen, pg.Color(255, 255, 255), (
                     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
                     self.cell_size), 1)
 
@@ -42,14 +43,14 @@ if __name__ == '__main__':
     board = Board(5, 7)
     running = True
     size = (200, 300)
-    screen = pygame.display.set_mode(size)
+    screen = pg.display.set_mode(size)
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 board.get_click(mouse_pos)
         screen.fill((0, 0, 0))
         board.render(screen)
-        pygame.display.flip()
+        pg.display.flip()

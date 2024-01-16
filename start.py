@@ -1,47 +1,52 @@
-import pygame
+from os import path
+
+import pygame as pg
+
+
+FONT_PATH = path.join('font_data', 'Minecrafia-Regular.ttf')
 
 
 def main_menu():
-    pygame.init()
+    pg.init()
     size = (300, 300)
-    screen = pygame.display.set_mode(size)
-    screen.fill(pygame.Color('white'))
-    f1 = pygame.font.SysFont('serif', 26)
-    text1 = f1.render('Супер название', True, (180, 0, 0))
+    screen = pg.display.set_mode(size)
+    screen.fill(pg.Color('white'))
+    f1 = pg.font.Font(FONT_PATH, 24)
+    text1 = f1.render('Cut them all!', True, (180, 0, 0))
     screen.blit(text1, (70, 50))
-    pygame.draw.rect(screen, pygame.Color('red'), (100, 85, 100, 50))
-    f2 = pygame.font.SysFont('serif', 26)
-    text2 = f2.render('Играть', True, pygame.Color('white'))
+    pg.draw.rect(screen, pg.Color('red'), (100, 85, 100, 50))
+    f2 = pg.font.Font(FONT_PATH, 20)
+    text2 = f2.render('Играть', True, pg.Color('white'))
     screen.blit(text2, (110, 90))
-    pygame.display.flip()
+    pg.display.flip()
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN:
                 if 100 < event.pos[0] < 200 and 85 < event.pos[1] < 135:
                     print('ye')
-    pygame.quit()
+    pg.quit()
 
 
 def first():
-    pygame.init()
+    pg.init()
     size = (300, 300)
-    screen = pygame.display.set_mode(size)
-    screen.fill(pygame.Color('blue'))
-    pygame.display.flip()
+    screen = pg.display.set_mode(size)
+    screen.fill(pg.Color('blue'))
+    pg.display.flip()
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN:
                 main_menu()
-    pygame.quit()
+    pg.quit()
 
 
 try:
     first()
 except Exception:
-    pygame.quit()
+    pg.quit()
