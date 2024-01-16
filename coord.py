@@ -21,7 +21,7 @@ class Board:
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                pg.draw.rect(screen, pg.Color(255, 255, 255), (
+                pg.draw.rect(screen, pg.Color('#ffffff'), (
                     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
                     self.cell_size), 1)
 
@@ -39,10 +39,11 @@ class Board:
         self.on_click(cell)
 
 
-if __name__ == '__main__':
-    board = Board(5, 7)
+def main() -> None:
+    board = Board(5, 5)
+    board.set_view(25, 125, 50)
     running = True
-    size = (200, 300)
+    size = (300, 400)
     screen = pg.display.set_mode(size)
     while running:
         for event in pg.event.get():
@@ -54,3 +55,7 @@ if __name__ == '__main__':
         screen.fill((0, 0, 0))
         board.render(screen)
         pg.display.flip()
+
+
+if __name__ == '__main__':
+    main()
