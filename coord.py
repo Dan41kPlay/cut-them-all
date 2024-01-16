@@ -25,7 +25,7 @@ class Tile(Sprite):
         self.width = width
         self.height = height
         self.image = image
-        self.rect = self.image.get_rect().move(dx + self.width * pos_x, dy + self.height * pos_y)
+        self.rect = self.image.get_rect().move(dx + self.width * (pos_x + .05), dy + self.height * (pos_y + .05))
 
 
 class Board:
@@ -92,7 +92,7 @@ def main() -> None:
             image.set_colorkey(colorkey)
         else:
             image = image.convert_alpha()
-        images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size,) * 2)
+        images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
     print(load_level(current_level))
     board.generate_level(load_level(current_level), images)
     running = True
