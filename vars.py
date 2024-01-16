@@ -16,7 +16,7 @@ LEVELS_PATH = os.path.join('data', 'levels')
 CUR_LEVEL_PATH = os.path.join('data', 'current_level.txt')
 
 game_name = 'Cut them all!'
-color_coding = {0: 'ff0000', 1: 'ff7f00', 2: 'ffff00', 3: '00ff00', 4: '00ffff', 5: '0000ff', 6: 'ff00ff'}
+color_coding = {0: '000000', 1: 'ff0000', 2: 'ff7f00', 3: 'ffff00', 4: '00ff00', 5: '00ffff', 6: '0000ff', 7: 'ff00ff'}
 sprite_group = pg.sprite.Group()
 with open(CUR_LEVEL_PATH) as file:
     current_level = int(file.read().strip())
