@@ -37,7 +37,7 @@ def main_menu():
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 if 100 < event.pos[0] < 200 and 85 < event.pos[1] < 135:
-                    coord.main()
+                    level_display.main()
     pgquit()
 
 
