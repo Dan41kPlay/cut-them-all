@@ -1,5 +1,7 @@
 import pygame as pg
 
+from vars import *
+
 
 class Board:
     # создание поля
@@ -10,7 +12,7 @@ class Board:
         # значения по умолчанию
         self.left = 10
         self.top = 10
-        self.cell_size = 30
+        self.cell_size = 50
 
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
@@ -40,11 +42,13 @@ class Board:
 
 
 def main() -> None:
-    board = Board(5, 5)
-    board.set_view(25, 125, 50)
-    running = True
-    size = (300, 400)
+    size = 300, 400
     screen = pg.display.set_mode(size)
+    board = Board(5, 5)
+    # board.set_view(25, 125, 50)
+    text1 = getFont(26).render('Cut them all!', True, pg.Color('#ffffff'))
+    screen.blit(text1, (25, 25))
+    running = True
     while running:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -52,9 +56,10 @@ def main() -> None:
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
                 board.get_click(mouse_pos)
-        screen.fill((0, 0, 0))
+        screen.fill('#000000')
         board.render(screen)
         pg.display.flip()
+    pgquit()
 
 
 if __name__ == '__main__':
