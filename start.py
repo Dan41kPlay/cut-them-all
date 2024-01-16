@@ -7,7 +7,7 @@ from vars import *
 def main_menu():
     size = 300, 300
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(game_name)
+    pg.display.set_caption(f'{game_name} - Main menu')
     screen.fill(pg.Color('#ffffff'))
     text1 = get_font(24).render(game_name, True, pg.Color('#ff0000'))
     screen.blit(text1, (70, 50))

@@ -113,7 +113,7 @@ def main() -> None:
         current_level[0] = 0
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(game_name)
+    pg.display.set_caption(f'{game_name} - Level {current_level}')
     board = Board(5, 5)
     board.set_view(25, 125, 50)
     images = {}
