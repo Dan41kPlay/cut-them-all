@@ -47,13 +47,16 @@ class Board:
         self.dy = top
         self.cell_size = cell_size
 
+    def change_tile(self, new_tile_type, x, y, images):
+        self.board[y][x] = new_tile_type
+        Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
+
     def generate_level(self, level_map, images):
         for y in range(len(level_map)):
             for x in range(len(level_map[y])):
-                tile_type = color_coding[int(level_map[y][x])]
-                Tile(images[tile_type], self.cell_size, self.cell_size,
+                self.board[y][x] = color_coding[int(level_map[y][x])]
+                Tile(images[self.board[y][x]], self.cell_size, self.cell_size,
                      x, y, self.dx, self.dy)
-                self.board[y][x] = tile_type
 
     def render(self, screen):
         for y in range(self.height):
@@ -70,6 +73,9 @@ class Board:
 
     def get_click(self, mouse_pos):
         return self.get_cell(mouse_pos)
+
+    def check_win(self):
+        return all(all(tile == '000000' for tile in row) for row in self.board)
 
 
 def main() -> None:
@@ -93,7 +99,6 @@ def main() -> None:
         else:
             image = image.convert_alpha()
         images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
-    print(load_level(current_level))
     board.generate_level(load_level(current_level), images)
     running = True
     while running:
@@ -104,14 +109,21 @@ def main() -> None:
                 clicked_tile = board.get_click(event.pos)
                 if event.button == 1:
                     board.pt1 = clicked_tile
+                    board.change_tile('000000', clicked_tile[0], clicked_tile[1], images)
                 if event.button == 3:
                     board.pt2 = clicked_tile
+                if event.button == 2:
+                    board.pt1 = board.pt2 = None
                 print(board.pt1, board.pt2)
         screen.fill('#000000')
         text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
-        sprite_group.draw(screen)
-        board.render(screen)
+        if board.check_win():
+            text2 = get_font(26).render('completed!', True, pg.Color('#00ffff'))
+            screen.blit(text2, (25, 60))
+        else:
+            sprite_group.draw(screen)
+            board.render(screen)
         pg.display.flip()
     pgquit()
 
