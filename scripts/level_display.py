@@ -108,7 +108,7 @@ class Board:
         return all(all(tile == '000000' for tile in row) for row in self.board)
 
 
-def main() -> None:
+def main(go_to=None) -> None:
     if current_level[0] > level_amount:
         current_level[0] = 0
     size = 300, 400
@@ -175,7 +175,10 @@ def main() -> None:
             screen.blit(text2, (175, 30))
         board.draw_selected(screen)
         pg.display.flip()
-    pgquit()
+    if go_to is None:
+        pgquit()
+    else:
+        go_to()
 
 
 if __name__ == '__main__':

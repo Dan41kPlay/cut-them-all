@@ -21,7 +21,7 @@ color_coding = {0: '000000', 1: 'ff0000', 2: 'ff7f00', 3: 'ffff00', 4: '00ff00',
 sprite_group = pg.sprite.Group()
 if not os.path.exists(CUR_LEVEL_PATH):
     with open(CUR_LEVEL_PATH, 'w') as file:
-        file.write('1')
+        file.write('0')
 with open(CUR_LEVEL_PATH) as file:
     current_level = [int(file.read().strip())]
 level_amount = len(os.listdir(LEVELS_PATH)) - 1

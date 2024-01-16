@@ -35,6 +35,7 @@ def main_menu():
              'troy all planets in the system to',
              'complete the level. Good luck!']
     is_guide = False
+    return_to_main_menu = True
     running = True
     while running:
         for event in pg.event.get():
@@ -43,10 +44,18 @@ def main_menu():
             if event.type == pg.MOUSEBUTTONDOWN and 40 <= event.pos[0] <= 260:
                 if is_guide and 310 <= event.pos[1] <= 340:
                     is_guide = False
+                    if not return_to_main_menu:
+                        level_display.main(main_menu)
+                    return_to_main_menu = True
                 elif 50 <= event.pos[1] <= 80:
-                    level_display.main()
+                    if not current_level[0]:
+                        current_level[0] += 1
+                        is_guide = True
+                        return_to_main_menu = False
+                        continue
+                    level_display.main(main_menu)
                 elif 90 <= event.pos[1] <= 120:
-                    current_level[0] = 1
+                    current_level[0] = 0
                     with open(CUR_LEVEL_PATH, 'w') as file:
                         file.write(str(current_level[0]))
                 elif 130 <= event.pos[1] <= 160:
