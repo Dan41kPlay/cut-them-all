@@ -130,7 +130,7 @@ def main() -> None:
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 2:
+                if event.button == 2 and board.check_tiles():
                     board.cut_tiles(images)
                     continue
                 clicked_tile = board.get_click(event.pos)
