@@ -1,5 +1,4 @@
 import os
-from ctypes import windll
 from sys import exit
 
 import pygame as pg
@@ -9,8 +8,6 @@ __all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_I
            'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount',
            'get_font', 'pgquit']
 
-
-os.environ['SDL_VIDEO_WINDOW_POS'] = f'{windll.user32.GetSystemMetrics(0) // 2 - 150}, {windll.user32.GetSystemMetrics(1) // 2 - 250}'
 
 pg.init()
 FONT_PATH = os.path.join('data', 'font', 'Minecraftia-Regular.ttf')
