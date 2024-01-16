@@ -18,7 +18,7 @@ def main_menu():
                   '[Left MB] Select first point',
                   '[Right MB] Select second point',
                   '[Esc] Clear selected points',
-                  '[Middle MB] / [Enter] Cut', 'between selected points']
+                  '[Middle MB] / [Space] Cut', 'between selected points']
     font = get_font(14)
     text_coord = 140
     for line in intro_text:
