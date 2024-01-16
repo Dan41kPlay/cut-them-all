@@ -10,7 +10,7 @@ __all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_I
 
 
 pg.init()
-FONT_PATH = os.path.join('data', 'font_data', 'Minecraftia-Regular.ttf')
+FONT_PATH = os.path.join('data', 'font', 'Minecraftia-Regular.ttf')
 COLORS_PATH = os.path.join('data', 'colors')
 LEVELS_PATH = os.path.join('data', 'levels')
 CUR_LEVEL_PATH = os.path.join('data', 'current_level.txt')
