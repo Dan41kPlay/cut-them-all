@@ -77,6 +77,7 @@ class Board:
 def main() -> None:
     size = 300, 400
     screen = pg.display.set_mode(size)
+    pg.display.set_caption(game_name)
     board = Board(5, 5)
     board.set_view(25, 125, 50)
     colorkey = None

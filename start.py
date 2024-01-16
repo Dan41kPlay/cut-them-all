@@ -5,10 +5,11 @@ from vars import *
 
 
 def main_menu():
-    size = (300, 300)
+    size = 300, 300
     screen = pg.display.set_mode(size)
+    pg.display.set_caption(game_name)
     screen.fill(pg.Color('#ffffff'))
-    text1 = get_font(24).render('Cut them all!', True, (180, 0, 0))
+    text1 = get_font(24).render(game_name, True, (180, 0, 0))
     screen.blit(text1, (70, 50))
     pg.draw.rect(screen, pg.Color('#ff0000'), (100, 85, 100, 50), border_radius=10)
     text2 = get_font(24).render('Play', True, pg.Color('#ffffff'))
@@ -41,8 +42,9 @@ def main_menu():
 
 
 def first():
-    size = (300, 300)
+    size = 300, 300
     screen = pg.display.set_mode(size)
+    pg.display.set_caption(game_name)
     screen.fill(pg.Color('#0000ff'))
     pg.display.flip()
     running = True
