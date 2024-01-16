@@ -6,6 +6,12 @@ import pygame as pg
 from .vars import *
 
 
+def rotate(img, pos, angle):
+    w, h = img.get_size()
+    img2 = pg.Surface((w*2, h*2), pg.SRCALPHA)
+    img2.blit(img, (w-pos[0], h-pos[1]))
+    return pg.transform.rotate(img2, angle)
+
 def load_level(level):
     with open(os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]
@@ -162,11 +168,18 @@ def main(go_to=None) -> None:
         screen.blit(text4, (177, 60))
         if board.check_win():
             screen.blit(text3, (25, 60))
+            planet_image = pg.transform.scale(pg.image.load(ANIM_IMG_PATH), (150, 150))
             current_level[0] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(str(current_level[0]))
             pg.display.flip()
-            sleep(2)
+            for i in range(720):
+                im = rotate(planet_image, (75, 75), 0.8 * i)
+                rect = im.get_rect()
+                rect.center = (150, 225)
+                screen.blit(im, rect)
+                pg.display.update()
+                sleep(0.00027)
             main()
         else:
             sprite_group.draw(screen)
