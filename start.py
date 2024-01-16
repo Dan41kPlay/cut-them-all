@@ -1,6 +1,6 @@
 import pygame as pg
 
-import coord
+import level_display
 from vars import *
 
 
