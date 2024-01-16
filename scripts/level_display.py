@@ -12,6 +12,7 @@ def rotate(img, pos, angle):
     img2.blit(img, (w-pos[0], h-pos[1]))
     return pg.transform.rotate(img2, angle)
 
+
 def load_level(level):
     with open(os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]

@@ -4,9 +4,9 @@ from sys import exit
 import pygame as pg
 
 
-__all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_IMG_PATH',
-           'ANIM_IMG_PATH', 'game_name', 'color_coding', 'sprite_group', 'current_level',
-           'level_amount', 'get_font', 'pgquit']
+__all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_IMG_PATH', 'ANIM_IMG_PATH',
+           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount',
+           'get_font', 'pgquit']
 
 
 pg.init()
