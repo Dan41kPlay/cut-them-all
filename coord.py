@@ -5,6 +5,12 @@ import pygame as pg
 from vars import *
 
 
+def proverka(pt1, pt2, screen):
+    if pt2 != None and pt1 != None:
+        if pt2[0] == pt1[0] or pt2[1] == pt1[1] or abs(pt2[0] - pt1[0]) == abs(pt1[1] - pt2[1]):
+            pg.draw.line(screen, (230, 50, 230), (pt1[0] * 50 + 50, pt1[1] * 50 + 145), (pt2[0] * 50 + 50, pt2[1] * 50 + 150), 3)
+    print(pt1, pt2)
+
 def load_level(level):
     with open(os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]
@@ -106,17 +112,14 @@ def main() -> None:
                     board.pt1 = clicked_tile
                 if event.button == 3:
                     board.pt2 = clicked_tile
-                if board.pt2 != None and board.pt1 != None:
-                    if board.pt2[0] == board.pt1[0] or board.pt2[1] == board.pt1[1]\
-                            or abs(board.pt2[0] - board.pt1[0]) == abs(board.pt1[1] - board.pt2[1]):
-                        print('yeu')
-                print(board.pt1, board.pt2)
+                proverka(board.pt1, board.pt2, screen)
+                pg.display.flip()
         screen.fill('#000000')
         text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
         sprite_group.draw(screen)
         board.render(screen)
-        pg.display.flip()
+        #pg.display.flip()
     pgquit()
 
 
