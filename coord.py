@@ -106,6 +106,10 @@ def main() -> None:
                     board.pt1 = clicked_tile
                 if event.button == 3:
                     board.pt2 = clicked_tile
+                if board.pt2 != None and board.pt1 != None:
+                    if board.pt2[0] == board.pt1[0] or board.pt2[1] == board.pt1[1]\
+                            or abs(board.pt2[0] - board.pt1[0]) == abs(board.pt1[1] - board.pt2[1]):
+                        print('yeu')
                 print(board.pt1, board.pt2)
         screen.fill('#000000')
         text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
