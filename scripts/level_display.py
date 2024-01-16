@@ -175,9 +175,8 @@ def main(go_to=None) -> None:
                 file.write(str(current_level[0]))
             pg.display.flip()
             for i in range(720):
-                pg.transform.scale(planet_image, (250, 250))
                 im = pg.transform.scale(planet_image, (250, 250))
-                im = rotate(im, (125, 125), 0.8 * i)
+                im = rotate(im, (125, 127), i)
                 rect = im.get_rect()
                 rect.center = (150, 250)
                 screen.blit(im, rect)
