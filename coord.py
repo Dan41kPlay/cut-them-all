@@ -46,8 +46,6 @@ def main() -> None:
     screen = pg.display.set_mode(size)
     board = Board(5, 5)
     board.set_view(25, 125, 50)
-    text1 = getFont(26).render('Cut them all!', True, pg.Color('#ffffff'))
-    screen.blit(text1, (25, 25))
     running = True
     while running:
         for event in pg.event.get():
@@ -57,6 +55,8 @@ def main() -> None:
                 mouse_pos = event.pos
                 board.get_click(mouse_pos)
         screen.fill('#000000')
+        text1 = getFont(26).render('Level 0', True, pg.Color('#ffffff'))
+        screen.blit(text1, (25, 25))
         board.render(screen)
         pg.display.flip()
     pgquit()
