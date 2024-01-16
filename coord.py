@@ -38,6 +38,8 @@ class Board:
         self.dx = 10
         self.dy = 10
         self.cell_size = 50
+        self.pt1 = None
+        self.pt2 = None
 
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
@@ -60,9 +62,6 @@ class Board:
                     x * self.cell_size + self.dx, y * self.cell_size + self.dy, self.cell_size,
                     self.cell_size), 1)
 
-    def on_click(self, cell_coords):
-        print(cell_coords)
-
     def get_cell(self, mouse_pos):
         if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
             self.dy <= mouse_pos[1] < self.dy + self.height * self.cell_size):
@@ -70,8 +69,7 @@ class Board:
                     int((mouse_pos[1] - self.dy) / self.cell_size))
 
     def get_click(self, mouse_pos):
-        cell = self.get_cell(mouse_pos)
-        self.on_click(cell)
+        return self.get_cell(mouse_pos)
 
 
 def main() -> None:
@@ -103,8 +101,12 @@ def main() -> None:
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                mouse_pos = event.pos
-                board.get_click(mouse_pos)
+                clicked_tile = board.get_click(event.pos)
+                if event.button == 1:
+                    board.pt1 = clicked_tile
+                if event.button == 3:
+                    board.pt2 = clicked_tile
+                print(board.pt1, board.pt2)
         screen.fill('#000000')
         text1 = get_font(26).render(f'Level {current_level}', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 25))
