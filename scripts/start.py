@@ -1,7 +1,3 @@
-import os
-
-import pygame as pg
-
 from .vars import *
 from . import level_display
 
