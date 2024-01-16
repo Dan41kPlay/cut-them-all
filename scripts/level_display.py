@@ -3,7 +3,7 @@ from time import sleep, perf_counter
 
 import pygame as pg
 
-from vars import *
+from .vars import *
 
 
 def load_level(level):
