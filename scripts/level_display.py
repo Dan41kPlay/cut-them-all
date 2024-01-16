@@ -8,8 +8,8 @@ from .vars import *
 
 def rotate(img, pos, angle):
     w, h = img.get_size()
-    img2 = pg.Surface((w*2, h*2), pg.SRCALPHA)
-    img2.blit(img, (w-pos[0], h-pos[1]))
+    img2 = pg.Surface((w * 2, h * 2), pg.SRCALPHA)
+    img2.blit(img, (w - pos[0], h - pos[1]))
     return pg.transform.rotate(img2, angle)
 
 
@@ -175,12 +175,13 @@ def main(go_to=None) -> None:
                 file.write(str(current_level[0]))
             pg.display.flip()
             for i in range(720):
+                pg.transform.scale(planet_image, (300, 300))
                 im = rotate(planet_image, (75, 75), 0.8 * i)
                 rect = im.get_rect()
-                rect.center = (150, 225)
+                rect.center = (150, 250)
                 screen.blit(im, rect)
                 pg.display.update()
-                sleep(0.00027)
+                sleep(0.001)
             main()
         else:
             sprite_group.draw(screen)
