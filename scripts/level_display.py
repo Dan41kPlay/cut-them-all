@@ -108,7 +108,7 @@ def main(go_to=None, level_up=True) -> None:
         level_up = True
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'{game_name} - Level {current_level[not level_up]}')
+    pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[not level_up]), images)

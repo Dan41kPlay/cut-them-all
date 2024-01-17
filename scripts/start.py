@@ -40,7 +40,7 @@ class Levels:
 def main_menu():
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'{game_name} - Main menu')
+    pg.display.set_caption(game_name)
     levels = Levels(5, 5)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
@@ -49,8 +49,9 @@ def main_menu():
              get_font(20).render('How to play?', True, pg.Color('#ffffff')),
              get_font(20).render('Reset progress', True, pg.Color('#ffffff')),
              get_font(20).render('Playing guide', True, pg.Color('#ffffff')),
-             get_font(20).render('OK', True, pg.Color('#ffffff')),
-             get_font(20).render('Cancel', True, pg.Color('#ffffff'))]
+             get_font(20).render('Okay, thanks', True, pg.Color('#ffffff')),
+             get_font(20).render('Cancel', True, pg.Color('#ffffff')),
+             get_font(20).render('Good luck!', True, pg.Color('#ffffff'))]
     controls = ['Controls:',
                 '[ Left MB ]  Select 1st planet',
                 '[ Right MB ]  Select 2nd planet',
@@ -65,9 +66,9 @@ def main_menu():
              'vertically or diagonally. Other',
              'planets can\'t be on the way and',
              'you can\'t destroy planets one',
-             'by one, so think in advance. Des-',
-             'troy all planets in the system to',
-             'complete the level. Good luck!']
+             'by one, so think in advance.',
+             'Destroy all planets in the',
+             'system to complete the level.']
     is_guide = False
     level_selection = False
     return_to_main_menu = True
@@ -122,7 +123,7 @@ def main_menu():
                     (x + .05) * levels.cell_size + levels.dx - 2, (y + .05) * levels.cell_size + levels.dy - 2,
                     levels.cell_size * .95 + 4, levels.cell_size * .95 + 4), border_radius=17)
         if 40 <= mouse_pos[0] <= 260:
-            to_outline = [[*range(310, 341)]] if is_guide or level_selection else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
+            to_outline = [[*range(360, 391)]] if is_guide or level_selection else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
             found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
             if found:
                 top_left = to_outline[found[0]]
@@ -138,6 +139,7 @@ def main_menu():
                 guide_rect.x = 10
                 text_coord += guide_rect.height
                 screen.blit(string_rendered, guide_rect)
+            screen.blit(texts[8], texts[8].get_rect(centerx=150, y=310))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=15)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=360))
         elif level_selection:

@@ -49,7 +49,7 @@ def rotate(img, pos, angle):
 
 
 def animation(screen, center, rotations=1):
-    for i in range(360 * rotations):
+    for i in range(int(360 * rotations)):
         im = pg.transform.scale(planet_image, (250, 250))
         im = rotate(im, (125, 127), i)
         rect = im.get_rect()
