@@ -69,10 +69,10 @@ def pgquit():
     pg.display.set_caption(f'{game_name} - Closing...')
     text = get_font(25).render('Saving & closing...', True, pg.Color('#ffffff'))
     screen.blit(text, text.get_rect(centerx=150, y=15))
-    # anim = Thread(target=animation, args=(screen, (150, 200)))
-    # anim.start()
+    anim = Thread(target=animation, args=(screen, (150, 200)))
+    anim.start()
     with open(CUR_LEVEL_PATH, 'w') as file:
         file.write(','.join(map(str, current_level[:2])))
-    # anim.join()
+    anim.join()
     pg.quit()
     exit()
