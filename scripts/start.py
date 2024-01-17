@@ -44,7 +44,7 @@ def main_menu():
     levels = Levels(5, 6)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
-             get_font(20).render(f'Play' + (f'(level {current_level[1]})' if current_level[1] else ''), True, pg.Color('#ffffff')),
+             get_font(20).render('Play' + (f'(level {current_level[1]})' if current_level[1] else ''), True, pg.Color('#ffffff')),
              get_font(20).render('Select level', True, pg.Color('#ffffff')),
              get_font(20).render('How to play?', True, pg.Color('#ffffff')),
              get_font(20).render('Reset progress', True, pg.Color('#ffffff')),
