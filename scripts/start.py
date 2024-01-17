@@ -106,7 +106,7 @@ def main_menu():
                             current_level[1] = selected_level
                             print(current_level[1])
                             level_display.main(main_menu, False)
-                if 40 <= event.pos[0] <= 260 and 310 <= event.pos[1] <= 340:
+                if 40 <= event.pos[0] <= 260 and 360 <= event.pos[1] <= 390:
                     if is_guide:
                         is_guide = False
                         if not return_to_main_menu:
@@ -138,12 +138,12 @@ def main_menu():
                 guide_rect.x = 10
                 text_coord += guide_rect.height
                 screen.blit(string_rendered, guide_rect)
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 310, 220, 30), border_radius=15)
-            screen.blit(texts[6], texts[6].get_rect(centerx=150, y=310))
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=15)
+            screen.blit(texts[6], texts[6].get_rect(centerx=150, y=360))
         elif level_selection:
             levels.render(screen)
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 310, 220, 30), border_radius=15)
-            screen.blit(texts[7], texts[7].get_rect(centerx=150, y=310))
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=15)
+            screen.blit(texts[7], texts[7].get_rect(centerx=150, y=360))
         else:
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=15)
