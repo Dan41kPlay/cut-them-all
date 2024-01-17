@@ -117,6 +117,12 @@ def main(go_to=None, level_up=True) -> None:
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
+    text3c = text3.copy()
+    a_surf = pg.Surface(text3c.get_size(), pg.SRCALPHA)
+    alpha = 0
+    clock = pg.time.Clock()
+    seconds_x, speed = 25, 10
+    won, need_move = False, False
     second, seconds = perf_counter(), current_level[0] if level_up else 0
     running = True
     while running:
@@ -153,9 +159,42 @@ def main(go_to=None, level_up=True) -> None:
         screen.blit(bg, (0, 0))
         text1 = get_font(25).render(f'Level {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'All levels', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
+        if won:
+            if seconds_x < 177:
+                seconds_x = min(seconds_x + speed, 177)
+                speed *= .935
+                alpha = min(alpha + 4, 255)
+                text3c = text3.copy()
+                a_surf.fill((255, 255, 255, alpha))
+                text3c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                screen.blit(text3c, (25, 60))
+                need_move = True
+            else:
+                speed = 10
+                need_move = False
+        if not won:
+            if seconds_x > 25:
+                seconds_x = max(seconds_x - speed, 25)
+                speed *= .935
+                alpha = max(alpha - 4, 0)
+                text3c = text3.copy()
+                a_surf.fill((255, 255, 255, alpha))
+                text3c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                screen.blit(text3c, (25, 60))
+                need_move = True
+            else:
+                speed = 10
+                need_move = False
         text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
-        screen.blit(text4, (177, 60))
+        screen.blit(text4, (seconds_x, 60))
+        if need_move:
+            pg.display.flip()
+            clock.tick(60)
+            continue
         if board.check_win():
+            if not won:
+                won = True
+                continue
             screen.blit(text3, (25, 60))
             current_level[(not level_up) + 1] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
@@ -166,6 +205,8 @@ def main(go_to=None, level_up=True) -> None:
             sprite_group = pg.sprite.Group()
             board.generate_level(load_level(current_level[(not level_up) + 1]), images)
             second, seconds = perf_counter(), 0
+            if won:
+                won = False
             continue
         else:
             mouse_pos = pg.mouse.get_pos()
