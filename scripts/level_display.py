@@ -1,6 +1,7 @@
 import os
 from random import randint
 from time import sleep, perf_counter
+from typing import Any
 
 from .vars import *
 
@@ -41,6 +42,7 @@ class Board:
         self.width = width
         self.height = height
         self.board: list[list[str]] = [['000000'] * width for _ in range(height)]
+        self.sprites: list[list[Any]] = [[None] * width for _ in range(height)]
         self.dx = 25
         self.dy = 125
         self.cell_size = 50
@@ -49,7 +51,8 @@ class Board:
 
     def change_tile(self, new_tile_type, x, y, images):
         self.board[y][x] = new_tile_type
-        Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
+        sprite_group.remove(self.sprites[y][x])
+        self.sprites[y][x] = Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
 
     def selected_tiles(self) -> list[tuple[int, int]]:
         if self.pt1 is None or self.pt2 is None or self.pt1 == self.pt2:
@@ -84,8 +87,7 @@ class Board:
         for y in range(len(level_map)):
             for x in range(len(level_map[y])):
                 self.board[y][x] = color_coding[int(level_map[y][x])]
-                Tile(images[self.board[y][x]], self.cell_size, self.cell_size,
-                     x, y, self.dx, self.dy)
+                self.sprites[y][x] = Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
 
     def render(self, screen):
         for y in range(self.height):
@@ -117,6 +119,7 @@ def main(go_to=None) -> None:
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[0]), images)
+    bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     stars = [[randint(0, 300), randint(0, 400)] for _ in range(100)]
     text1 = get_font(25).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
     text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
@@ -154,6 +157,7 @@ def main(go_to=None) -> None:
             second = perf_counter()
             seconds += 1
         screen.fill(pg.Color('#000000'))
+        screen.blit(bg, (0, 0))
         screen.blit(text1, (25, 20))
         text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
         screen.blit(text4, (177, 60))
@@ -172,7 +176,10 @@ def main(go_to=None) -> None:
                 screen.blit(im, rect)
                 pg.display.update()
                 sleep(0.001)
-            main(go_to)
+                sprite_group = pg.sprite.Group()
+                board.generate_level(load_level(current_level[0]), images)
+                second, seconds = perf_counter(), 0
+                continue
         else:
             mouse_pos = pg.mouse.get_pos()
             if 165 <= mouse_pos[0] <= 285 and 25 <= mouse_pos[1] <= 55:
