@@ -7,7 +7,7 @@ import pygame as pg
 
 
 __all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_IMG_PATH', 'MENU_IMG_PATH', 'ANIM_IMG_PATH',
-           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount',
+           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images',
            'get_font', 'pgquit', 'pg']
 
 
@@ -29,6 +29,13 @@ if not os.path.exists(CUR_LEVEL_PATH):
 with open(CUR_LEVEL_PATH) as file:
     current_level = [int(file.read().strip())]
 level_amount = len(os.listdir(LEVELS_PATH)) - 1
+images = {}
+for filename in os.listdir(COLORS_PATH):
+    fullname = os.path.join(COLORS_PATH, filename)
+    if not os.path.isfile(fullname):
+        continue
+    image = pg.image.load(fullname)
+    images[filename.split('.')[0]] = pg.transform.scale(image, (45, 45))
 
 
 def get_font(size: int):

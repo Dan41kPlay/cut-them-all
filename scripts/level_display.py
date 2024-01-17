@@ -41,18 +41,11 @@ class Board:
         self.width = width
         self.height = height
         self.board: list[list[str]] = [['000000'] * width for _ in range(height)]
-        # значения по умолчанию
-        self.dx = 10
-        self.dy = 10
+        self.dx = 25
+        self.dy = 125
         self.cell_size = 50
         self.pt1 = None
         self.pt2 = None
-
-    # настройка внешнего вида
-    def set_view(self, left, top, cell_size):
-        self.dx = left
-        self.dy = top
-        self.cell_size = cell_size
 
     def change_tile(self, new_tile_type, x, y, images):
         self.board[y][x] = new_tile_type
@@ -122,14 +115,6 @@ def main(go_to=None) -> None:
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'{game_name} - Level {current_level[0]}')
     board = Board(5, 5)
-    board.set_view(25, 125, 50)
-    images = {}
-    for filename in os.listdir(COLORS_PATH):
-        fullname = os.path.join(COLORS_PATH, filename)
-        if not os.path.isfile(fullname):
-            continue
-        image = pg.image.load(fullname).convert_alpha()
-        images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[0]), images)
     stars = [[randint(0, 300), randint(0, 400)] for _ in range(100)]
@@ -144,7 +129,10 @@ def main(go_to=None) -> None:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 if 165 <= event.pos[0] <= 285 and 25 <= event.pos[1] <= 55:
-                    main(go_to)
+                    sprite_group = pg.sprite.Group()
+                    board.generate_level(load_level(current_level[0]), images)
+                    second, seconds = perf_counter(), 0
+                    break
                 if event.button == 2 and board.check_tiles():
                     board.cut_tiles(images)
                     continue
