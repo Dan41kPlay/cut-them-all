@@ -41,7 +41,7 @@ def main_menu():
     size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(game_name)
-    levels = Levels(5, 5)
+    levels = Levels(5, 6)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
              get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff')),
