@@ -115,16 +115,17 @@ def main(go_to=None, level_up=True) -> None:
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[(not level_up) + 1]), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
-    text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
-    text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
-    text3c = text3.copy()
-    a_surf = pg.Surface(text3c.get_size(), pg.SRCALPHA)
+    text2 = get_font(20).render('Menu', True, pg.Color('#ffffff'))
+    text3 = get_font(20).render('Restart', True, pg.Color('#ffffff'))
+    text4 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
+    text4c = text4.copy()
+    a_surf = pg.Surface(text4c.get_size(), pg.SRCALPHA)
     alpha = 0
     clock = pg.time.Clock()
     seconds_x, speed = 25, 10
     won, need_move = False, False
     second, seconds = perf_counter(), current_level[0] if level_up else 0
-    running = True
+    running, to_menu = True, False
     while running:
         if level_up:
             current_level[0] = seconds
@@ -132,10 +133,14 @@ def main(go_to=None, level_up=True) -> None:
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
-                if 165 <= event.pos[0] <= 285 and 25 <= event.pos[1] <= 55:
-                    sprite_group = pg.sprite.Group()
-                    board.generate_level(load_level(current_level[(not level_up) + 1]), images)
-                    break
+                if 165 <= event.pos[0] <= 285:
+                    if 25 <= event.pos[1] <= 55:
+                        running = False
+                        to_menu = True
+                    if 65 <= event.pos[1] <= 95:
+                        sprite_group = pg.sprite.Group()
+                        board.generate_level(load_level(current_level[(not level_up) + 1]), images)
+                        break
                 clicked_tile = board.get_click(event.pos)
                 if clicked_tile is None:
                     continue
@@ -157,17 +162,18 @@ def main(go_to=None, level_up=True) -> None:
             seconds += 1
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        text1 = get_font(25).render(f'Level {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'All levels', True, pg.Color('#ffffff'))
+        text1 = get_font(25).render(f'Level {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'All levels',
+                                    True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
         if won:
             if seconds_x < 177:
                 seconds_x = min(seconds_x + speed, 177)
                 speed *= .935
                 alpha = min(alpha + 4, 255)
-                text3c = text3.copy()
+                text4c = text4.copy()
                 a_surf.fill((255, 255, 255, alpha))
-                text3c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-                screen.blit(text3c, (25, 60))
+                text4c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                screen.blit(text4c, (25, 60))
                 need_move = True
             else:
                 speed = 10
@@ -177,16 +183,16 @@ def main(go_to=None, level_up=True) -> None:
                 seconds_x = max(seconds_x - speed, 25)
                 speed *= .935
                 alpha = max(alpha - 4, 0)
-                text3c = text3.copy()
+                text4c = text4.copy()
                 a_surf.fill((255, 255, 255, alpha))
-                text3c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-                screen.blit(text3c, (25, 60))
+                text4c.blit(a_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+                screen.blit(text4c, (25, 60))
                 need_move = True
             else:
                 speed = 10
                 need_move = False
-        text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
-        screen.blit(text4, (seconds_x, 60))
+        text5 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
+        screen.blit(text5, (seconds_x, 60))
         if need_move:
             pg.display.flip()
             clock.tick(60)
@@ -195,7 +201,7 @@ def main(go_to=None, level_up=True) -> None:
             if not won:
                 won = True
                 continue
-            screen.blit(text3, (25, 60))
+            screen.blit(text4, (25, 60))
             current_level[(not level_up) + 1] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(','.join(map(str, current_level[:2])))
@@ -210,14 +216,19 @@ def main(go_to=None, level_up=True) -> None:
             continue
         else:
             mouse_pos = pg.mouse.get_pos()
-            if 165 <= mouse_pos[0] <= 285 and 25 <= mouse_pos[1] <= 55:
-                pg.draw.rect(screen, pg.Color('#00ffff'), (163, 23, 124, 34), 2, border_radius=17)
+            if 165 <= mouse_pos[0] <= 285:
+                if 25 <= mouse_pos[1] <= 55:
+                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 23, 124, 34),2, 17)
+                if 65 <= mouse_pos[1] <= 95:
+                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 63, 124, 34), 2, 17)
             sprite_group.draw(screen)
             board.render(screen)
             pg.draw.rect(screen, pg.Color('#001f7f'), (165, 25, 120, 30), border_radius=15)
             screen.blit(text2, text2.get_rect(centerx=225, y=25))
+            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 65, 120, 30), border_radius=15)
+            screen.blit(text3, text3.get_rect(centerx=225, y=65))
         pg.display.flip()
-    if go_to is None:
+    if go_to is None or not to_menu:
         pgquit()
     else:
         go_to()
