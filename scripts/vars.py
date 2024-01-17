@@ -1,5 +1,7 @@
 import os
 from sys import exit
+from threading import Thread
+from time import sleep
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
@@ -8,7 +10,7 @@ import pygame as pg
 
 __all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'START_IMG_PATH', 'MENU_IMG_PATH', 'ANIM_IMG_PATH',
            'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images',
-           'get_font', 'pgquit', 'pg']
+           'animation', 'get_font', 'pgquit', 'pg']
 
 
 pg.init()
@@ -36,6 +38,25 @@ for filename in os.listdir(COLORS_PATH):
         continue
     image = pg.image.load(fullname)
     images[filename.split('.')[0]] = pg.transform.scale(image, (45, 45))
+planet_image = pg.transform.scale(pg.image.load(ANIM_IMG_PATH), (150, 150))
+
+
+def rotate(img, pos, angle):
+    w, h = img.get_size()
+    img2 = pg.Surface((w * 2, h * 2), pg.SRCALPHA)
+    img2.blit(img, (w - pos[0], h - pos[1]))
+    return pg.transform.rotate(img2, angle)
+
+
+def animation(screen, center, rotations=1):
+    for i in range(360 * rotations):
+        im = pg.transform.scale(planet_image, (250, 250))
+        im = rotate(im, (125, 127), i)
+        rect = im.get_rect()
+        rect.center = center
+        screen.blit(im, rect)
+        pg.display.update()
+        sleep(0.001)
 
 
 def get_font(size: int):
@@ -43,5 +64,15 @@ def get_font(size: int):
 
 
 def pgquit():
+    size = 300, 350
+    screen = pg.display.set_mode(size)
+    pg.display.set_caption(f'{game_name} - Closing...')
+    text = get_font(25).render('Saving & closing...', True, pg.Color('#ffffff'))
+    screen.blit(text, text.get_rect(centerx=150, y=15))
+    anim = Thread(target=animation, args=(screen, (150, 200)))
+    anim.start()
+    with open(CUR_LEVEL_PATH, 'w') as file:
+        file.write(str(current_level[0]))
+    anim.join()
     pg.quit()
     exit()

@@ -1,15 +1,8 @@
 import os
-from time import sleep, perf_counter
+from time import perf_counter
 from typing import Any
 
 from .vars import *
-
-
-def rotate(img, pos, angle):
-    w, h = img.get_size()
-    img2 = pg.Surface((w * 2, h * 2), pg.SRCALPHA)
-    img2.blit(img, (w - pos[0], h - pos[1]))
-    return pg.transform.rotate(img2, angle)
 
 
 def load_level(level):
@@ -162,24 +155,16 @@ def main(go_to=None, level_up=True) -> None:
         screen.blit(text4, (177, 60))
         if board.check_win():
             screen.blit(text3, (25, 60))
-            planet_image = pg.transform.scale(pg.image.load(ANIM_IMG_PATH), (150, 150))
             current_level[not level_up] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(str(current_level[0]))
             pg.display.flip()
-            for i in range(720):
-                im = pg.transform.scale(planet_image, (250, 250))
-                im = rotate(im, (125, 127), i)
-                rect = im.get_rect()
-                rect.center = (150, 250)
-                screen.blit(im, rect)
-                pg.display.update()
-                sleep(0.001)
-                pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
-                sprite_group = pg.sprite.Group()
-                board.generate_level(load_level(current_level[not level_up]), images)
-                second, seconds = perf_counter(), 0
-                continue
+            animation(screen, (150, 250), 2)
+            pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
+            sprite_group = pg.sprite.Group()
+            board.generate_level(load_level(current_level[not level_up]), images)
+            second, seconds = perf_counter(), 0
+            continue
         else:
             mouse_pos = pg.mouse.get_pos()
             if 165 <= mouse_pos[0] <= 285 and 25 <= mouse_pos[1] <= 55:
