@@ -3,16 +3,17 @@ from . import level_display
 
 
 def main_menu():
-    size = 300, 350
+    size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'{game_name} - Main menu')
-    screen.fill(pg.Color('#000000'))
-    text1 = get_font(30).render(game_name, True, pg.Color('#ff0000'))
-    text2 = get_font(20).render('Play', True, pg.Color('#ffffff'))
-    text3 = get_font(20).render('Reset progress', True, pg.Color('#ff0000'))
-    text4 = get_font(20).render('How to play?', True, pg.Color('#000000'))
-    text5 = get_font(20).render('Playing guide', True, pg.Color('#ffffff'))
-    text6 = get_font(20).render('OK', True, pg.Color('#ffffff'))
+    bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
+    texts = [get_font(30).render(game_name, True, pg.Color('#00ffff')),
+             get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff')),
+             get_font(20).render('Select level', True, pg.Color('#ffffff')),
+             get_font(20).render('How to play?', True, pg.Color('#ffffff')),
+             get_font(20).render('Reset progress', True, pg.Color('#ffffff')),
+             get_font(20).render('Playing guide', True, pg.Color('#ffffff')),
+             get_font(20).render('OK', True, pg.Color('#ffffff'))]
     controls = ['Controls:',
                 '[ Left MB ]  Select 1st planet',
                 '[ Right MB ]  Select 2nd planet',
@@ -34,6 +35,9 @@ def main_menu():
     return_to_main_menu = True
     running = True
     while running:
+        screen.fill(pg.Color('#000000'))
+        screen.blit(bg, (0, 0))
+        texts[1] = get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff'))
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
@@ -51,14 +55,23 @@ def main_menu():
                         continue
                     level_display.main(main_menu)
                 elif 90 <= event.pos[1] <= 120:
+                    level_selection = True
+                elif 130 <= event.pos[1] <= 160:
+                    is_guide = True
+                elif 170 <= event.pos[1] <= 200:
                     current_level[0] = 0
                     with open(CUR_LEVEL_PATH, 'w') as file:
                         file.write(str(current_level[0]))
-                elif 130 <= event.pos[1] <= 160:
-                    is_guide = True
-        screen.fill(pg.Color('#000000'))
+        mouse_pos = pg.mouse.get_pos()
+        if 40 <= mouse_pos[0] <= 260:
+            to_outline = [[*range(310, 341)]] if is_guide else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
+            found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
+            if found:
+                top_left = to_outline[found[0]]
+                pg.draw.rect(screen, pg.Color('#00ffff'),
+                             (38, top_left[0] - 2, 224, 34), 2, border_radius=17)
         if is_guide:
-            screen.blit(text5, text5.get_rect(centerx=150))
+            screen.blit(texts[5], texts[5].get_rect(centerx=150))
             text_coord = 30
             for line in guide:
                 string_rendered = guide_font.render(line, 1, pg.Color('#ffffff'))
@@ -68,17 +81,19 @@ def main_menu():
                 guide_rect.x = 10
                 text_coord += guide_rect.height
                 screen.blit(string_rendered, guide_rect)
-            pg.draw.rect(screen, pg.Color('#ff0000'), (40, 310, 220, 30), border_radius=15)
-            screen.blit(text6, text6.get_rect(centerx=150, y=310))
+            pg.draw.rect(screen, pg.Color('#00077f'), (40, 310, 220, 30), border_radius=15)
+            screen.blit(texts[6], texts[6].get_rect(centerx=150, y=310))
         else:
-            screen.blit(text1, text1.get_rect(centerx=150))
-            pg.draw.rect(screen, pg.Color('#ff0000'), (40, 50, 220, 30), border_radius=15)
-            screen.blit(text2, text2.get_rect(centerx=150, y=50))
-            pg.draw.rect(screen, pg.Color('#222222'), (40, 90, 220, 30), border_radius=15)
-            screen.blit(text3, text3.get_rect(centerx=150, y=90))
-            pg.draw.rect(screen, pg.Color('#ffffff'), (40, 130, 220, 30), border_radius=15)
-            screen.blit(text4, text4.get_rect(centerx=150, y=130))
-            text_coord = 175
+            screen.blit(texts[0], texts[0].get_rect(centerx=150))
+            pg.draw.rect(screen, pg.Color('#00077f'), (40, 50, 220, 30), border_radius=15)
+            screen.blit(texts[1], texts[1].get_rect(centerx=150, y=50))
+            pg.draw.rect(screen, pg.Color('#00077f'), (40, 90, 220, 30), border_radius=15)
+            screen.blit(texts[2], texts[2].get_rect(centerx=150, y=90))
+            pg.draw.rect(screen, pg.Color('#00077f'), (40, 130, 220, 30), border_radius=15)
+            screen.blit(texts[3], texts[3].get_rect(centerx=150, y=130))
+            pg.draw.rect(screen, pg.Color('#00077f'), (40, 170, 220, 30), border_radius=15)
+            screen.blit(texts[4], texts[4].get_rect(centerx=150, y=170))
+            text_coord = 225
             for line in controls:
                 string_rendered = controls_font.render(line, 1, pg.Color('#ffffff'))
                 intro_rect = string_rendered.get_rect()
