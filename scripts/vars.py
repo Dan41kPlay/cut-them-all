@@ -20,7 +20,7 @@ START_IMG_PATH = os.path.join('data', 'start.jpg')
 MENU_IMG_PATH = os.path.join('data', 'main_menu_bg.jpg')
 ANIM_IMG_PATH = os.path.join('data', 'planets_round-round.png')
 
-game_name = 'Cut them all!'
+game_name = 'Destroy them all!'
 color_coding = {0: '000000', 1: 'ff0000', 2: 'ff7f00', 3: 'ffff00', 4: '00ff00', 5: '00ffff', 6: '0000ff', 7: 'ff00ff'}
 sprite_group = pg.sprite.Group()
 if not os.path.exists(CUR_LEVEL_PATH):

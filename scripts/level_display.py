@@ -1,4 +1,5 @@
 import os
+from random import randint
 from time import sleep, perf_counter
 
 from .vars import *
@@ -39,7 +40,7 @@ class Board:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.board = [['000000'] * width for _ in range(height)]
+        self.board: list[list[str]] = [['000000'] * width for _ in range(height)]
         # значения по умолчанию
         self.dx = 10
         self.dy = 10
@@ -96,7 +97,7 @@ class Board:
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                pg.draw.rect(screen, pg.Color('#7f7f7f'), (
+                pg.draw.rect(screen, pg.Color('#007f7f'), (
                     x * self.cell_size + self.dx, y * self.cell_size + self.dy, self.cell_size,
                     self.cell_size), 1)
 
@@ -114,6 +115,7 @@ class Board:
 
 
 def main(go_to=None) -> None:
+    global sprite_group
     if current_level[0] > level_amount:
         current_level[0] = 0
     size = 300, 400
@@ -128,11 +130,13 @@ def main(go_to=None) -> None:
             continue
         image = pg.image.load(fullname).convert_alpha()
         images[filename.split('.')[0]] = pg.transform.scale(image, (board.cell_size * .9,) * 2)
+    sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[0]), images)
-    second, seconds = perf_counter(), 0
+    stars = [[randint(0, 300), randint(0, 400)] for _ in range(100)]
     text1 = get_font(25).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
     text2 = get_font(20).render(f'Restart', True, pg.Color('#ff0000'))
     text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
+    second, seconds = perf_counter(), 0
     running = True
     while running:
         for event in pg.event.get():
@@ -140,7 +144,7 @@ def main(go_to=None) -> None:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 if 160 < event.pos[0] < 285 and 20 < event.pos[1] < 70:
-                    main()
+                    main(go_to)
                 if event.button == 2 and board.check_tiles():
                     board.cut_tiles(images)
                     continue
@@ -183,6 +187,8 @@ def main(go_to=None) -> None:
             main(go_to)
         else:
             sprite_group.draw(screen)
+            for star in stars:
+                pg.draw.rect(screen, pg.Color('#ffffff'), (star[0], star[1], 1, 1))
             board.render(screen)
             pg.draw.rect(screen, pg.Color('#222222'), (165, 27.5, 115, 35), border_radius=15)
             screen.blit(text2, (175, 30))

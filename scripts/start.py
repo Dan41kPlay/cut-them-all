@@ -7,7 +7,7 @@ def main_menu():
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'{game_name} - Main menu')
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
-    texts = [get_font(30).render(game_name, True, pg.Color('#00ffff')),
+    texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
              get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff')),
              get_font(20).render('Select level', True, pg.Color('#ffffff')),
              get_font(20).render('How to play?', True, pg.Color('#ffffff')),
@@ -84,7 +84,7 @@ def main_menu():
             pg.draw.rect(screen, pg.Color('#00077f'), (40, 310, 220, 30), border_radius=15)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=310))
         else:
-            screen.blit(texts[0], texts[0].get_rect(centerx=150))
+            screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
             pg.draw.rect(screen, pg.Color('#00077f'), (40, 50, 220, 30), border_radius=15)
             screen.blit(texts[1], texts[1].get_rect(centerx=150, y=50))
             pg.draw.rect(screen, pg.Color('#00077f'), (40, 90, 220, 30), border_radius=15)
