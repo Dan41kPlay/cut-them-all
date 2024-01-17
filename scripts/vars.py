@@ -27,7 +27,7 @@ if not os.path.exists(CUR_LEVEL_PATH):
     with open(CUR_LEVEL_PATH, 'w') as file:
         file.write('0')
 with open(CUR_LEVEL_PATH) as file:
-    current_level = [int(file.read().strip())]
+    current_level = [int(file.read().strip()), 0]
 level_amount = len(os.listdir(LEVELS_PATH)) - 1
 images = {}
 for filename in os.listdir(COLORS_PATH):

@@ -1,5 +1,4 @@
 import os
-from random import randint
 from time import sleep, perf_counter
 from typing import Any
 
@@ -37,7 +36,6 @@ class Tile(Sprite):
 
 
 class Board:
-    # создание поля
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -93,8 +91,8 @@ class Board:
         for y in range(self.height):
             for x in range(self.width):
                 pg.draw.rect(screen, pg.Color('#007f7f'), (
-                    x * self.cell_size + self.dx, y * self.cell_size + self.dy, self.cell_size,
-                    self.cell_size), 1)
+                    x * self.cell_size + self.dx, y * self.cell_size + self.dy,
+                    self.cell_size, self.cell_size), 1)
 
     def get_cell(self, mouse_pos):
         if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
@@ -109,18 +107,19 @@ class Board:
         return all(all(tile == '000000' for tile in row) for row in self.board)
 
 
-def main(go_to=None) -> None:
+def main(go_to=None, level_up=True) -> None:
     global sprite_group
-    if current_level[0] > level_amount:
-        current_level[0] = 0
+    if current_level[not level_up] > level_amount:
+        current_level[not level_up] = 0
+    if not level_up and current_level[1] == current_level[0]:
+        level_up = True
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'{game_name} - Level {current_level[0]}')
+    pg.display.set_caption(f'{game_name} - Level {current_level[not level_up]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
-    board.generate_level(load_level(current_level[0]), images)
+    board.generate_level(load_level(current_level[not level_up]), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
-    text1 = get_font(25).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
     text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
     second, seconds = perf_counter(), 0
@@ -132,7 +131,7 @@ def main(go_to=None) -> None:
             if event.type == pg.MOUSEBUTTONDOWN:
                 if 165 <= event.pos[0] <= 285 and 25 <= event.pos[1] <= 55:
                     sprite_group = pg.sprite.Group()
-                    board.generate_level(load_level(current_level[0]), images)
+                    board.generate_level(load_level(current_level[not level_up]), images)
                     second, seconds = perf_counter(), 0
                     break
                 if event.button == 2 and board.check_tiles():
@@ -157,13 +156,14 @@ def main(go_to=None) -> None:
             seconds += 1
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
+        text1 = get_font(25).render(f'Level {current_level[not level_up]}' if current_level[not level_up] else 'All levels', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
         text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
         screen.blit(text4, (177, 60))
         if board.check_win():
             screen.blit(text3, (25, 60))
             planet_image = pg.transform.scale(pg.image.load(ANIM_IMG_PATH), (150, 150))
-            current_level[0] += 1
+            current_level[not level_up] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(str(current_level[0]))
             pg.display.flip()
@@ -175,8 +175,9 @@ def main(go_to=None) -> None:
                 screen.blit(im, rect)
                 pg.display.update()
                 sleep(0.001)
+                pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
                 sprite_group = pg.sprite.Group()
-                board.generate_level(load_level(current_level[0]), images)
+                board.generate_level(load_level(current_level[not level_up]), images)
                 second, seconds = perf_counter(), 0
                 continue
         else:

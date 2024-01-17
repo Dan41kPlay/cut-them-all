@@ -2,10 +2,46 @@ from .vars import *
 from . import level_display
 
 
+class Levels:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.dx = 25
+        self.dy = 25
+        self.cell_size = 50
+
+    def render(self, screen):
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.get_level((x, y)) > level_amount:
+                    break
+                pg.draw.rect(screen, pg.Color('#000f3f' if self.get_level((x, y)) > current_level[0] else '#001f7f'), (
+                    (x + .05) * self.cell_size + self.dx, (y + .05) * self.cell_size + self.dy,
+                    self.cell_size * .95, self.cell_size * .95), border_radius=15)
+                level_text = get_font(20).render(str(self.get_level((x, y,))), True, pg.Color('#ffffff'))
+                screen.blit(level_text, level_text.get_rect(center=((x + .5) * self.cell_size + self.dx, (y + .5) * self.cell_size + self.dy)))
+            else:
+                continue
+            break
+
+    def get_cell(self, mouse_pos):
+        if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
+            self.dy <= mouse_pos[1] < self.dy + self.height * self.cell_size):
+            return (int((mouse_pos[0] - self.dx) / self.cell_size),
+                    int((mouse_pos[1] - self.dy) / self.cell_size))
+
+    def get_click(self, mouse_pos):
+        return self.get_cell(mouse_pos)
+
+    def get_level(self, clicked_level):
+        return clicked_level[1] * self.width + clicked_level[0] + 1
+
+
 def main_menu():
     size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'{game_name} - Main menu')
+    levels = Levels(5, 5)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
              get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff')),
@@ -13,7 +49,8 @@ def main_menu():
              get_font(20).render('How to play?', True, pg.Color('#ffffff')),
              get_font(20).render('Reset progress', True, pg.Color('#ffffff')),
              get_font(20).render('Playing guide', True, pg.Color('#ffffff')),
-             get_font(20).render('OK', True, pg.Color('#ffffff'))]
+             get_font(20).render('OK', True, pg.Color('#ffffff')),
+             get_font(20).render('Cancel', True, pg.Color('#ffffff'))]
     controls = ['Controls:',
                 '[ Left MB ]  Select 1st planet',
                 '[ Right MB ]  Select 2nd planet',
@@ -32,39 +69,60 @@ def main_menu():
              'troy all planets in the system to',
              'complete the level. Good luck!']
     is_guide = False
+    level_selection = False
     return_to_main_menu = True
     running = True
     while running:
+        mouse_pos = pg.mouse.get_pos()
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
         texts[1] = get_font(20).render(f'Play {f'(level {current_level[0]})' if current_level[0] else ''}', True, pg.Color('#ffffff'))
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.MOUSEBUTTONDOWN and 40 <= event.pos[0] <= 260:
-                if is_guide and 310 <= event.pos[1] <= 340:
-                    is_guide = False
-                    if not return_to_main_menu:
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if 40 <= event.pos[0] <= 260 and not is_guide and not level_selection:
+                    if 50 <= event.pos[1] <= 80:
+                        if not current_level[0]:
+                            current_level[0] += 1
+                            is_guide = True
+                            return_to_main_menu = False
+                            continue
                         level_display.main(main_menu)
-                    return_to_main_menu = True
-                elif 50 <= event.pos[1] <= 80:
-                    if not current_level[0]:
-                        current_level[0] += 1
-                        is_guide = True
-                        return_to_main_menu = False
+                    elif 90 <= event.pos[1] <= 120:
+                        level_selection = True
                         continue
-                    level_display.main(main_menu)
-                elif 90 <= event.pos[1] <= 120:
-                    level_selection = True
-                elif 130 <= event.pos[1] <= 160:
-                    is_guide = True
-                elif 170 <= event.pos[1] <= 200:
-                    current_level[0] = 0
-                    with open(CUR_LEVEL_PATH, 'w') as file:
-                        file.write(str(current_level[0]))
-        mouse_pos = pg.mouse.get_pos()
+                    elif 130 <= event.pos[1] <= 160:
+                        is_guide = True
+                    elif 170 <= event.pos[1] <= 200:
+                        current_level[0] = 0
+                        with open(CUR_LEVEL_PATH, 'w') as file:
+                            file.write(str(current_level[0]))
+                if level_selection:
+                    clicked_level = levels.get_click(mouse_pos)
+                    if clicked_level is not None:
+                        selected_level = levels.get_level(clicked_level)
+                        if selected_level <= current_level[0]:
+                            current_level[1] = selected_level
+                            print(current_level[1])
+                            level_display.main(main_menu, False)
+                if 40 <= event.pos[0] <= 260 and 310 <= event.pos[1] <= 340:
+                    if is_guide:
+                        is_guide = False
+                        if not return_to_main_menu:
+                            level_display.main(main_menu)
+                        return_to_main_menu = True
+                    elif level_selection:
+                        level_selection = False
+        if level_selection:
+            at_level = levels.get_click(mouse_pos)
+            if at_level is not None and levels.get_level(at_level) <= current_level[0]:
+                x, y = at_level
+                pg.draw.rect(screen, pg.Color('#00ffff'), (
+                    (x + .05) * levels.cell_size + levels.dx - 2, (y + .05) * levels.cell_size + levels.dy - 2,
+                    levels.cell_size * .95 + 4, levels.cell_size * .95 + 4), border_radius=17)
         if 40 <= mouse_pos[0] <= 260:
-            to_outline = [[*range(310, 341)]] if is_guide else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
+            to_outline = [[*range(310, 341)]] if is_guide or level_selection else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
             found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
             if found:
                 top_left = to_outline[found[0]]
@@ -82,6 +140,10 @@ def main_menu():
                 screen.blit(string_rendered, guide_rect)
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 310, 220, 30), border_radius=15)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=310))
+        elif level_selection:
+            levels.render(screen)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 310, 220, 30), border_radius=15)
+            screen.blit(texts[7], texts[7].get_rect(centerx=150, y=310))
         else:
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=15)
