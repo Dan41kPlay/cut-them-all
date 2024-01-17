@@ -53,12 +53,11 @@ def main_menu():
              get_font(20).render('Cancel', True, pg.Color('#ffffff')),
              get_font(20).render('Good luck!', True, pg.Color('#ffffff'))]
     controls = ['Controls:',
-                'Everything is done with LMB:',
-                'to select first planet, click',
-                'on it. To cancel selection,',
-                'click on it again. To destroy',
-                'planets click on the second',
-                'planet.']
+                'Everything is done with LMB: to',
+                'select first planet, click on it.',
+                'To cancel selection, click on it',
+                'again. To destroy planets click',
+                'on the second planet.']
     controls_font = get_font(14)
     guide_font = get_font(14)
     guide = ['Select two planets of the same',
