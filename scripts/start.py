@@ -68,8 +68,7 @@ def main_menu():
             found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
             if found:
                 top_left = to_outline[found[0]]
-                pg.draw.rect(screen, pg.Color('#00ffff'),
-                             (38, top_left[0] - 2, 224, 34), 2, border_radius=17)
+                pg.draw.rect(screen, pg.Color('#00ffff'), (38, top_left[0] - 2, 224, 34), 2, border_radius=17)
         if is_guide:
             screen.blit(texts[5], texts[5].get_rect(centerx=150))
             text_coord = 30
@@ -81,17 +80,17 @@ def main_menu():
                 guide_rect.x = 10
                 text_coord += guide_rect.height
                 screen.blit(string_rendered, guide_rect)
-            pg.draw.rect(screen, pg.Color('#00077f'), (40, 310, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 310, 220, 30), border_radius=15)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=310))
         else:
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
-            pg.draw.rect(screen, pg.Color('#00077f'), (40, 50, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=15)
             screen.blit(texts[1], texts[1].get_rect(centerx=150, y=50))
-            pg.draw.rect(screen, pg.Color('#00077f'), (40, 90, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 90, 220, 30), border_radius=15)
             screen.blit(texts[2], texts[2].get_rect(centerx=150, y=90))
-            pg.draw.rect(screen, pg.Color('#00077f'), (40, 130, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 130, 220, 30), border_radius=15)
             screen.blit(texts[3], texts[3].get_rect(centerx=150, y=130))
-            pg.draw.rect(screen, pg.Color('#00077f'), (40, 170, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 170, 220, 30), border_radius=15)
             screen.blit(texts[4], texts[4].get_rect(centerx=150, y=170))
             text_coord = 225
             for line in controls:

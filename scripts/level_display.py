@@ -134,7 +134,7 @@ def main(go_to=None) -> None:
     board.generate_level(load_level(current_level[0]), images)
     stars = [[randint(0, 300), randint(0, 400)] for _ in range(100)]
     text1 = get_font(25).render(f'Level {current_level[0]}' if current_level[0] else 'All levels', True, pg.Color('#ffffff'))
-    text2 = get_font(20).render(f'Restart', True, pg.Color('#ff0000'))
+    text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
     second, seconds = perf_counter(), 0
     running = True
@@ -143,7 +143,7 @@ def main(go_to=None) -> None:
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                if 160 < event.pos[0] < 285 and 20 < event.pos[1] < 70:
+                if 165 <= event.pos[0] <= 285 and 25 <= event.pos[1] <= 55:
                     main(go_to)
                 if event.button == 2 and board.check_tiles():
                     board.cut_tiles(images)
@@ -166,7 +166,7 @@ def main(go_to=None) -> None:
             second = perf_counter()
             seconds += 1
         screen.fill(pg.Color('#000000'))
-        screen.blit(text1, (25, 25))
+        screen.blit(text1, (25, 20))
         text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
         screen.blit(text4, (177, 60))
         if board.check_win():
@@ -186,12 +186,15 @@ def main(go_to=None) -> None:
                 sleep(0.001)
             main(go_to)
         else:
+            mouse_pos = pg.mouse.get_pos()
+            if 165 <= mouse_pos[0] <= 285 and 25 <= mouse_pos[1] <= 55:
+                pg.draw.rect(screen, pg.Color('#00ffff'), (163, 23, 124, 34), 2, border_radius=17)
             sprite_group.draw(screen)
             for star in stars:
                 pg.draw.rect(screen, pg.Color('#ffffff'), (star[0], star[1], 1, 1))
             board.render(screen)
-            pg.draw.rect(screen, pg.Color('#222222'), (165, 27.5, 115, 35), border_radius=15)
-            screen.blit(text2, (175, 30))
+            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 25, 120, 30), border_radius=15)
+            screen.blit(text2, text2.get_rect(centerx=225, y=25))
         board.draw_selected(screen)
         pg.display.flip()
     if go_to is None:
