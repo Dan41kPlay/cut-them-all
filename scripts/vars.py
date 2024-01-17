@@ -29,7 +29,7 @@ if not os.path.exists(CUR_LEVEL_PATH):
     with open(CUR_LEVEL_PATH, 'w') as file:
         file.write('0')
 with open(CUR_LEVEL_PATH) as file:
-    current_level = [int(file.read().strip()), 0]
+    current_level = [*map(int, file.read().strip().split(',')), 0]
 level_amount = len(os.listdir(LEVELS_PATH)) - 1
 images = {}
 for filename in os.listdir(COLORS_PATH):
@@ -69,10 +69,10 @@ def pgquit():
     pg.display.set_caption(f'{game_name} - Closing...')
     text = get_font(25).render('Saving & closing...', True, pg.Color('#ffffff'))
     screen.blit(text, text.get_rect(centerx=150, y=15))
-    anim = Thread(target=animation, args=(screen, (150, 200)))
-    anim.start()
+    # anim = Thread(target=animation, args=(screen, (150, 200)))
+    # anim.start()
     with open(CUR_LEVEL_PATH, 'w') as file:
-        file.write(str(current_level[0]))
-    anim.join()
+        file.write(','.join(map(str, current_level[:2])))
+    # anim.join()
     pg.quit()
     exit()

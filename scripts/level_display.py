@@ -64,12 +64,13 @@ class Board:
             self.change_tile('000000', tile[0], tile[1], images)
         self.pt1 = self.pt2 = None
 
+    # for animation only
     def draw_selected(self, screen):
         if self.pt1 is None or self.pt2 is None or self.pt1 == self.pt2:
             return
-        color = '#00ff00' if (self.check_tiles() and
-                              (self.pt1[0] == self.pt2[0] or self.pt1[1] == self.pt2[1] or abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1])))\
-            else '#ff0000'
+        color = ('#00ff00' if self.check_tiles() and
+                 (self.pt1[0] == self.pt2[0] or self.pt1[1] == self.pt2[1] or abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1]))
+                 else '#ff0000')
         pg.draw.line(screen, pg.Color(color),
                      ((self.pt1[0] + .5) * self.cell_size + self.dx, (self.pt1[1] + .5) * self.cell_size + self.dy),
                      ((self.pt2[0] + .5) * self.cell_size + self.dx, (self.pt2[1] + .5) * self.cell_size + self.dy), 5)
@@ -83,9 +84,10 @@ class Board:
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                pg.draw.rect(screen, pg.Color('#007f7f'), (
+
+                pg.draw.rect(screen, pg.Color('#00ffff' if self.pt1 == (x, y) else '#007f7f'), (
                     x * self.cell_size + self.dx, y * self.cell_size + self.dy,
-                    self.cell_size, self.cell_size), 1)
+                    self.cell_size, self.cell_size), 1 + (self.pt1 == (x, y)))
 
     def get_cell(self, mouse_pos):
         if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
@@ -102,67 +104,67 @@ class Board:
 
 def main(go_to=None, level_up=True) -> None:
     global sprite_group
-    if current_level[not level_up] > level_amount:
-        current_level[not level_up] = 0
-    if not level_up and current_level[1] == current_level[0]:
+    if current_level[(not level_up) + 1] > level_amount:
+        current_level[(not level_up) + 1] = 0
+    if (not level_up) and current_level[2] == current_level[1]:
         level_up = True
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
+    pg.display.set_caption(f'DTA! - Level {current_level[(not level_up) + 1]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
-    board.generate_level(load_level(current_level[not level_up]), images)
+    board.generate_level(load_level(current_level[(not level_up) + 1]), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     text2 = get_font(20).render(f'Restart', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
-    second, seconds = perf_counter(), 0
+    second, seconds = perf_counter(), current_level[0] if level_up else 0
     running = True
     while running:
+        if level_up:
+            current_level[0] = seconds
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
                 if 165 <= event.pos[0] <= 285 and 25 <= event.pos[1] <= 55:
                     sprite_group = pg.sprite.Group()
-                    board.generate_level(load_level(current_level[not level_up]), images)
-                    second, seconds = perf_counter(), 0
+                    board.generate_level(load_level(current_level[(not level_up) + 1]), images)
                     break
-                if event.button == 2 and board.check_tiles():
-                    board.cut_tiles(images)
-                    continue
                 clicked_tile = board.get_click(event.pos)
                 if clicked_tile is None:
                     continue
                 if board.board[clicked_tile[1]][clicked_tile[0]] == '000000':
                     continue
-                if event.button == 1:
+                if board.pt1 == clicked_tile:
+                    board.pt1 = None
+                elif board.pt1 is None:
                     board.pt1 = clicked_tile
-                if event.button == 3:
+                elif board.pt2 is None:
                     board.pt2 = clicked_tile
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    board.pt1 = board.pt2 = None
-                if event.key == pg.K_SPACE and board.check_tiles():
-                    board.cut_tiles(images)
+                    if board.check_tiles():
+                        board.cut_tiles(images)
+                        continue
+                    else:
+                        board.pt2 = None
         if perf_counter() - second >= 1:
             second = perf_counter()
             seconds += 1
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        text1 = get_font(25).render(f'Level {current_level[not level_up]}' if current_level[not level_up] else 'All levels', True, pg.Color('#ffffff'))
+        text1 = get_font(25).render(f'Level {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'All levels', True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
         text4 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
         screen.blit(text4, (177, 60))
         if board.check_win():
             screen.blit(text3, (25, 60))
-            current_level[not level_up] += 1
+            current_level[(not level_up) + 1] += 1
             with open(CUR_LEVEL_PATH, 'w') as file:
-                file.write(str(current_level[0]))
+                file.write(','.join(map(str, current_level[:2])))
             pg.display.flip()
             animation(screen, (150, 250), 2)
-            pg.display.set_caption(f'DTA! - Level {current_level[not level_up]}')
+            pg.display.set_caption(f'DTA! - Level {current_level[(not level_up) + 1]}')
             sprite_group = pg.sprite.Group()
-            board.generate_level(load_level(current_level[not level_up]), images)
+            board.generate_level(load_level(current_level[(not level_up) + 1]), images)
             second, seconds = perf_counter(), 0
             continue
         else:
@@ -173,7 +175,6 @@ def main(go_to=None, level_up=True) -> None:
             board.render(screen)
             pg.draw.rect(screen, pg.Color('#001f7f'), (165, 25, 120, 30), border_radius=15)
             screen.blit(text2, text2.get_rect(centerx=225, y=25))
-        board.draw_selected(screen)
         pg.display.flip()
     if go_to is None:
         pgquit()
