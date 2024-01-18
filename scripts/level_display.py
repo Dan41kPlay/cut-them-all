@@ -5,8 +5,9 @@ from typing import Any
 from .vars import *
 
 
-def load_level(level):
-    with open(os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
+def load_level(level, load_last=False):
+    with open(CUR_LEVEL_PROGRESS_PATH if load_last and os.path.exists(CUR_LEVEL_PROGRESS_PATH)
+              else os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]
 
 
@@ -59,10 +60,16 @@ class Board:
         selected_tiles = self.selected_tiles()
         return len(selected_tiles) > 1 and len({self.board[y][x] for x, y in selected_tiles if self.board[y][x] != '000000'}) == 1
 
-    def cut_tiles(self, images):
+    def cut_tiles(self, images, save_progress):
         for tile in self.selected_tiles():
             self.change_tile('000000', tile[0], tile[1], images)
         self.pt1 = self.pt2 = None
+        if not save_progress:
+            return
+        reverse_colors = {value: str(key) for key, value in color_coding.items()}
+        s = '\n'.join(''.join(reverse_colors[self.board[y][x]] for x in range(self.width)) for y in range(self.height))
+        with open(CUR_LEVEL_PROGRESS_PATH, 'w') as level_file:
+            level_file.write(s)
 
     # for animation only
     def draw_selected(self, screen):
@@ -113,7 +120,7 @@ def main(go_to=None, level_up=True) -> None:
     pg.display.set_caption(f'DTA! - Level {current_level[(not level_up) + 1]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
-    board.generate_level(load_level(current_level[(not level_up) + 1]), images)
+    board.generate_level(load_level(current_level[(not level_up) + 1], level_up), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     text2 = get_font(20).render('Menu', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('Restart', True, pg.Color('#ffffff'))
@@ -132,7 +139,7 @@ def main(go_to=None, level_up=True) -> None:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT and not won:
                 if 165 <= event.pos[0] <= 285:
                     if 25 <= event.pos[1] <= 55:
                         running = False
@@ -140,6 +147,8 @@ def main(go_to=None, level_up=True) -> None:
                     if 65 <= event.pos[1] <= 95:
                         sprite_group = pg.sprite.Group()
                         board.generate_level(load_level(current_level[(not level_up) + 1]), images)
+                        if os.path.exists(CUR_LEVEL_PROGRESS_PATH):
+                            os.remove(CUR_LEVEL_PROGRESS_PATH)
                         break
                 clicked_tile = board.get_click(event.pos)
                 if clicked_tile is None:
@@ -153,7 +162,7 @@ def main(go_to=None, level_up=True) -> None:
                 elif board.pt2 is None:
                     board.pt2 = clicked_tile
                     if board.check_tiles():
-                        board.cut_tiles(images)
+                        board.cut_tiles(images, level_up)
                         continue
                     else:
                         board.pt2 = None
