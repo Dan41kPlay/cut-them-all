@@ -180,7 +180,7 @@ def first():
     bg = pg.transform.scale(pg.image.load(START_IMG_PATH), size)
     rand_stutter = randint(30, 70) * 2
     bar_size = time_ctr = 0
-    bar_speed = 2
+    bar_speed = .08
     alpha = 255
     brightness, direction = 0, 1
     sun_size_start, sun_size_end = 50, 4
@@ -219,8 +219,13 @@ def first():
                 time_ctr = perf_counter()
             if perf_counter() - time_ctr >= 1:
                 bar_size += bar_speed
-            if bar_size > 163:
+            if bar_size < 40:
+                bar_speed = min(bar_speed * 1.05, 2)
+            elif bar_size > 163:
                 bar_speed *= .95
+            else:
+                bar_size = round(bar_size)
+                bar_speed = 2
 
         elif transitioning:
             bg_copy = bg.copy()
