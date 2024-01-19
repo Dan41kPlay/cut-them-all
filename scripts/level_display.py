@@ -64,7 +64,7 @@ class Board:
         for tile in self.selected_tiles():
             self.change_tile('000000', tile[0], tile[1], images)
         self.pt1 = self.pt2 = None
-        if self.check_win():
+        if self.check_win() and os.path.exists(CUR_LEVEL_PROGRESS_PATH):
             return os.remove(CUR_LEVEL_PROGRESS_PATH)
         reverse_colors = {value: str(key) for key, value in color_coding.items()}
         s = '\n'.join(''.join(reverse_colors[self.board[y][x]] for x in range(self.width)) for y in range(self.height))
