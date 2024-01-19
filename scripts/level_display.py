@@ -60,12 +60,12 @@ class Board:
         selected_tiles = self.selected_tiles()
         return len(selected_tiles) > 1 and len({self.board[y][x] for x, y in selected_tiles if self.board[y][x] != '000000'}) == 1
 
-    def cut_tiles(self, images, save_progress):
+    def cut_tiles(self, images):
         for tile in self.selected_tiles():
             self.change_tile('000000', tile[0], tile[1], images)
         self.pt1 = self.pt2 = None
-        if not save_progress:
-            return
+        if self.check_win():
+            return os.remove(CUR_LEVEL_PROGRESS_PATH)
         reverse_colors = {value: str(key) for key, value in color_coding.items()}
         s = '\n'.join(''.join(reverse_colors[self.board[y][x]] for x in range(self.width)) for y in range(self.height))
         with open(CUR_LEVEL_PROGRESS_PATH, 'w') as level_file:
@@ -167,7 +167,7 @@ def main(go_to=None, level_up=True) -> None:
                 elif board.pt2 is None:
                     board.pt2 = clicked_tile
                     if board.check_tiles():
-                        board.cut_tiles(images, level_up)
+                        board.cut_tiles(images)
                         continue
                     else:
                         board.pt2 = None
