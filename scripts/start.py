@@ -84,7 +84,7 @@ def main_menu() -> None:
         mouse_pos = pg.mouse.get_pos()
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        texts[1] = get_font(20).render(f'Играть{f' (ур. {current_level[1]})' if current_level[1] else ''}', True, pg.Color('#ffffff'))
+        texts[1] = get_font(20).render(f'Играть{f" (ур. {current_level[1]})" if current_level[1] else ""}', True, pg.Color('#ffffff'))
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
