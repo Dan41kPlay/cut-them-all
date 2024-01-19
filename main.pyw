@@ -1,3 +1,3 @@
 from scripts import start
 
-start.first()
+start.loading_screen()

@@ -3,18 +3,19 @@ from random import randint
 from time import perf_counter
 
 from .vars import *
-from . import level_display
+from .level_display import main
 
 
 class Levels:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.dx = 25
-        self.dy = 25
-        self.cell_size = 50
+    def __init__(self, width: int, height: int) -> None:
+        self.width: int = width
+        self.height: int = height
+        self.dx: int = 25
+        self.dy: int = 25
+        self.cell_size: int = 50
 
-    def render(self, screen):
+    def render(self, screen: pg.Surface) -> None:
+        level_font = get_font(20)
         for y in range(self.height):
             for x in range(self.width):
                 if self.get_level((x, y)) > level_amount:
@@ -22,26 +23,23 @@ class Levels:
                 pg.draw.rect(screen, pg.Color('#000f3f' if self.get_level((x, y)) > current_level[1] else '#001f7f'), (
                     (x + .05) * self.cell_size + self.dx, (y + .05) * self.cell_size + self.dy,
                     self.cell_size * .95, self.cell_size * .95), border_radius=10)
-                level_text = get_font(20).render(str(self.get_level((x, y,))), True, pg.Color('#ffffff'))
+                level_text = level_font.render(str(self.get_level((x, y,))), True, pg.Color('#ffffff'))
                 screen.blit(level_text, level_text.get_rect(center=((x + .5) * self.cell_size + self.dx, (y + .5) * self.cell_size + self.dy)))
             else:
                 continue
             break
 
-    def get_cell(self, mouse_pos):
+    def get_cell(self, mouse_pos: tuple[int, int]) -> tuple[int, int]:
         if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
             self.dy <= mouse_pos[1] < self.dy + self.height * self.cell_size):
             return (int((mouse_pos[0] - self.dx) / self.cell_size),
                     int((mouse_pos[1] - self.dy) / self.cell_size))
 
-    def get_click(self, mouse_pos):
-        return self.get_cell(mouse_pos)
-
-    def get_level(self, clicked_level):
-        return clicked_level[1] * self.width + clicked_level[0] + 1
+    def get_level(self, level_pos: tuple[int, int]) -> int:
+        return level_pos[1] * self.width + level_pos[0] + 1
 
 
-def main_menu():
+def main_menu() -> None:
     size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(game_name)
@@ -80,6 +78,7 @@ def main_menu():
     level_selection = False
     return_to_main_menu = True
     running = True
+
     while running:
         mouse_pos = pg.mouse.get_pos()
         screen.fill(pg.Color('#000000'))
@@ -96,7 +95,7 @@ def main_menu():
                             is_guide = True
                             return_to_main_menu = False
                             continue
-                        level_display.main(main_menu)
+                        main(main_menu)
                     elif 90 <= event.pos[1] <= 120:
                         level_selection = True
                         continue
@@ -109,22 +108,23 @@ def main_menu():
                         if os.path.exists(CUR_LEVEL_PROGRESS_PATH):
                             os.remove(CUR_LEVEL_PROGRESS_PATH)
                 if level_selection:
-                    clicked_level = levels.get_click(mouse_pos)
+                    clicked_level = levels.get_cell(mouse_pos)
                     if clicked_level is not None:
                         selected_level = levels.get_level(clicked_level)
                         if selected_level <= current_level[1]:
                             current_level[2] = selected_level
-                            level_display.main(main_menu, False)
+                            main(main_menu, False)
                 if 40 <= event.pos[0] <= 260 and 360 <= event.pos[1] <= 390:
                     if is_guide:
                         is_guide = False
                         if not return_to_main_menu:
-                            level_display.main(main_menu)
+                            main(main_menu)
                         return_to_main_menu = True
                     elif level_selection:
                         level_selection = False
+
         if level_selection:
-            at_level = levels.get_click(mouse_pos)
+            at_level = levels.get_cell(mouse_pos)
             if at_level is not None and levels.get_level(at_level) <= current_level[1]:
                 x, y = at_level
                 pg.draw.rect(screen, pg.Color('#00ffff'), (
@@ -136,6 +136,7 @@ def main_menu():
             if found:
                 top_left = to_outline[found[0]]
                 pg.draw.rect(screen, pg.Color('#00ffff'), (38, top_left[0] - 2, 224, 34), 2, border_radius=12)
+
         if is_guide:
             screen.blit(texts[5], texts[5].get_rect(centerx=150))
             text_coord = 30
@@ -149,10 +150,12 @@ def main_menu():
             screen.blit(texts[8], texts[8].get_rect(centerx=150, y=310))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=10)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=360))
+
         elif level_selection:
             levels.render(screen)
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=10)
             screen.blit(texts[7], texts[7].get_rect(centerx=150, y=360))
+
         else:
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=10)
@@ -173,10 +176,10 @@ def main_menu():
                 text_coord += intro_rect.height
                 screen.blit(string_rendered, intro_rect)
         pg.display.flip()
-    pgquit()
+    finish()
 
 
-def first():
+def loading_screen() -> None:
     size = 300, 300
     screen = pg.display.set_mode(size)
     pg.display.set_caption(game_name)
@@ -262,8 +265,8 @@ def first():
             screen.blit(text2, (150, 15))
         pg.display.flip()
         clock.tick(60)
-    pgquit()
+    finish()
 
 
 if __name__ == '__main__':
-    first()
+    loading_screen()

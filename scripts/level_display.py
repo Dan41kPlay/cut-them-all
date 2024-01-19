@@ -1,47 +1,47 @@
 import os
 from time import perf_counter
-from typing import Any
+from typing import Optional
 
 from .vars import *
 
 
-def load_level(level, load_last=False):
+def load_level(level: int, load_last=False) -> list[list[str]]:
     with open(CUR_LEVEL_PROGRESS_PATH if load_last and os.path.exists(CUR_LEVEL_PROGRESS_PATH)
               else os.path.join(LEVELS_PATH, f'{level}.map')) as level_file:
         return [[*line.strip()] for line in level_file]
 
 
 class Sprite(pg.sprite.Sprite):
-    def __init__(self, group):
+    def __init__(self, group: pg.sprite.Group) -> None:
         super().__init__(group)
         self.rect = None
 
-    def get_event(self, event):
+    def get_event(self, event: pg.event) -> None:
         pass
 
 
 class Tile(Sprite):
-    def __init__(self, image, width: int, height: int, pos_x: int, pos_y: int, dx: int, dy: int):
+    def __init__(self, image: pg.Surface, width: int, height: int, pos_x: int, pos_y: int, dx: int, dy: int) -> None:
         super().__init__(sprite_group)
-        self.width = width
-        self.height = height
-        self.image = image
-        self.rect = self.image.get_rect().move(dx + self.width * (pos_x + .05), dy + self.height * (pos_y + .05))
+        self.width: int = width
+        self.height: int = height
+        self.image: pg.Surface = image
+        self.rect: pg.Rect = self.image.get_rect().move(dx + self.width * (pos_x + .05), dy + self.height * (pos_y + .05))
 
 
 class Board:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self, width: int, height: int) -> None:
+        self.width: int = width
+        self.height: int = height
         self.board: list[list[str]] = [['000000'] * width for _ in range(height)]
-        self.sprites: list[list[Any]] = [[None] * width for _ in range(height)]
-        self.dx = 25
-        self.dy = 125
-        self.cell_size = 50
-        self.pt1 = None
-        self.pt2 = None
+        self.sprites: list[list[Optional[Tile]]] = [[None] * width for _ in range(height)]
+        self.dx: int = 25
+        self.dy: int = 125
+        self.cell_size: int = 50
+        self.pt1: Optional[tuple[int, int]] = None
+        self.pt2: Optional[tuple[int, int]] = None
 
-    def change_tile(self, new_tile_type, x, y, images):
+    def change_tile(self, new_tile_type: str, x: int, y: int) -> None:
         self.board[y][x] = new_tile_type
         sprite_group.remove(self.sprites[y][x])
         self.sprites[y][x] = Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
@@ -56,13 +56,13 @@ class Board:
                 [(x, self.pt1[1]) for x in range_x] if self.pt1[1] == self.pt2[1] else
                 [(x, y) for x, y in zip(range_x, range_y)] if abs(self.pt1[0] - self.pt2[0]) == abs(self.pt1[1] - self.pt2[1]) else [])
 
-    def check_tiles(self):
+    def check_tiles(self) -> bool:
         selected_tiles = self.selected_tiles()
         return len(selected_tiles) > 1 and len({self.board[y][x] for x, y in selected_tiles if self.board[y][x] != '000000'}) == 1
 
-    def cut_tiles(self, images):
+    def cut_tiles(self) -> None:
         for tile in self.selected_tiles():
-            self.change_tile('000000', tile[0], tile[1], images)
+            self.change_tile('000000', tile[0], tile[1])
         self.pt1 = self.pt2 = None
         if self.check_win() and os.path.exists(CUR_LEVEL_PROGRESS_PATH):
             return os.remove(CUR_LEVEL_PROGRESS_PATH)
@@ -72,7 +72,7 @@ class Board:
             level_file.write(s)
 
     # for animation only
-    def draw_selected(self, screen):
+    def draw_selected(self, screen) -> None:
         if self.pt1 is None or self.pt2 is None or self.pt1 == self.pt2:
             return
         color = ('#00ff00' if self.check_tiles() and
@@ -82,30 +82,26 @@ class Board:
                      ((self.pt1[0] + .5) * self.cell_size + self.dx, (self.pt1[1] + .5) * self.cell_size + self.dy),
                      ((self.pt2[0] + .5) * self.cell_size + self.dx, (self.pt2[1] + .5) * self.cell_size + self.dy), 5)
 
-    def generate_level(self, level_map, images):
+    def generate_level(self, level_map: list[list[str]]) -> None:
         for y in range(len(level_map)):
             for x in range(len(level_map[y])):
                 self.board[y][x] = color_coding[int(level_map[y][x])]
                 self.sprites[y][x] = Tile(images[self.board[y][x]], self.cell_size, self.cell_size, x, y, self.dx, self.dy)
 
-    def render(self, screen):
+    def render(self, screen: pg.Surface):
         for y in range(self.height):
             for x in range(self.width):
-
                 pg.draw.rect(screen, pg.Color('#00ffff' if self.pt1 == (x, y) else '#007f7f'), (
                     x * self.cell_size + self.dx, y * self.cell_size + self.dy,
                     self.cell_size, self.cell_size), 1 + (self.pt1 == (x, y)))
 
-    def get_cell(self, mouse_pos):
+    def get_cell(self, mouse_pos: tuple[int, int]) -> tuple[int, int]:
         if (self.dx <= mouse_pos[0] < self.dx + self.width * self.cell_size and
             self.dy <= mouse_pos[1] < self.dy + self.height * self.cell_size):
             return (int((mouse_pos[0] - self.dx) / self.cell_size),
                     int((mouse_pos[1] - self.dy) / self.cell_size))
 
-    def get_click(self, mouse_pos):
-        return self.get_cell(mouse_pos)
-
-    def check_win(self):
+    def check_win(self) -> bool:
         return all(all(tile == '000000' for tile in row) for row in self.board)
 
 
@@ -122,7 +118,7 @@ def main(go_to=None, level_up=True) -> None:
     pg.display.set_caption(f'DTA! - Уровень {current_level[(not level_up) + 1]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
-    board.generate_level(load_level(current_level[(not level_up) + 1], level_up), images)
+    board.generate_level(load_level(current_level[(not level_up) + 1], level_up))
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
 
     text2 = get_font(20).render('Меню', True, pg.Color('#ffffff'))
@@ -151,11 +147,11 @@ def main(go_to=None, level_up=True) -> None:
                         to_menu = True
                     if 65 <= event.pos[1] <= 95:
                         sprite_group = pg.sprite.Group()
-                        board.generate_level(load_level(current_level[(not level_up) + 1]), images)
+                        board.generate_level(load_level(current_level[(not level_up) + 1]))
                         if os.path.exists(CUR_LEVEL_PROGRESS_PATH):
                             os.remove(CUR_LEVEL_PROGRESS_PATH)
                         break
-                clicked_tile = board.get_click(event.pos)
+                clicked_tile = board.get_cell(event.pos)
                 if clicked_tile is None:
                     continue
                 if board.board[clicked_tile[1]][clicked_tile[0]] == '000000':
@@ -167,7 +163,7 @@ def main(go_to=None, level_up=True) -> None:
                 elif board.pt2 is None:
                     board.pt2 = clicked_tile
                     if board.check_tiles():
-                        board.cut_tiles(images)
+                        board.cut_tiles()
                         continue
                     else:
                         board.pt2 = None
@@ -227,7 +223,7 @@ def main(go_to=None, level_up=True) -> None:
             animate(screen, planet_image, (150, 250), (250, 250), 2)
             pg.display.set_caption(f'DTA! - Ур. {current_level[(not level_up) + 1]}')
             sprite_group = pg.sprite.Group()
-            board.generate_level(load_level(current_level[(not level_up) + 1]), images)
+            board.generate_level(load_level(current_level[(not level_up) + 1]))
             second, seconds = perf_counter(), 0
             if won:
                 won = False
@@ -249,7 +245,7 @@ def main(go_to=None, level_up=True) -> None:
         pg.display.flip()
 
     if go_to is None or not to_menu:
-        pgquit()
+        finish()
     else:
         go_to()
 
