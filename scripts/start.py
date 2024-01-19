@@ -1,3 +1,6 @@
+from random import randint
+from time import perf_counter
+
 from .vars import *
 from . import level_display
 
@@ -175,28 +178,58 @@ def first():
     screen = pg.display.set_mode(size)
     pg.display.set_caption(game_name)
     bg = pg.transform.scale(pg.image.load(START_IMG_PATH), size)
-    brightness, direction, speed = 0, 1, 2
+    rand_stutter = randint(30, 70) * 2
+    bar_size = time_ctr = 0
+    alpha = 255
+    brightness, direction = 0, 1
     clock = pg.time.Clock()
+    loading = True
+    transitioning = False
     running = True
     while running:
+        screen.fill(pg.Color('#000000'))
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if event.type in {pg.MOUSEBUTTONDOWN, pg.KEYDOWN}:
+            if not loading and event.type in {pg.MOUSEBUTTONDOWN, pg.KEYDOWN, pg.CONTROLLERBUTTONDOWN, pg.CONTROLLERTOUCHPADDOWN, pg.FINGERDOWN}:
                 main_menu()
-        brightness += direction * speed
-        if brightness >= 255:
-            brightness = 255
-            direction = -1
-        if brightness <= 0:
-            brightness = 0
-            direction = 1
-        screen.fill(pg.Color('#000000'))
-        screen.blit(bg, (0, 0))
-        text1 = get_font(12).render('Нажми на любую кнопку,', True, pg.Color((brightness,) * 3))
-        text2 = get_font(12).render('чтобы продолжить', True, pg.Color((brightness,) * 3))
-        screen.blit(text1, (120, 0))
-        screen.blit(text2, (150, 15))
+        if bar_size >= 200:
+            loading = False
+            transitioning = True
+        if not alpha:
+            transitioning = False
+        if loading:
+            pg.draw.rect(screen, pg.Color('#00ffff'), (48, 138, 204, 24), 2)
+            pg.draw.rect(screen, pg.Color('#00ffff'), (50, 140, bar_size, 20))
+            if bar_size != rand_stutter:
+                bar_size += 2
+                time_ctr = perf_counter()
+            if perf_counter() - time_ctr >= 1:
+                bar_size += 2
+        elif transitioning:
+            bg_copy = bg.copy()
+            dark = pg.Surface(bg.get_size()).convert_alpha()
+            dark.fill((0, 0, 0, alpha))
+            bg_copy.blit(dark, (0, 0))
+            screen.blit(bg_copy, (0, 0))
+            bright = pg.Surface((204 * alpha / 255, 24 * alpha / 255)).convert_alpha()
+            bright.fill((0, 0, 0, 255 - alpha))
+            pg.draw.rect(bright, pg.Color(0, 255, 255, alpha), (0, 0, 204, 24))
+            screen.blit(bright, bright.get_rect(center=(150, 150)))
+            alpha = max(alpha - 3, 0)
+        else:
+            brightness += direction * 2.5
+            if brightness >= 255:
+                brightness = 255
+                direction = -1
+            if brightness <= 0:
+                brightness = 0
+                direction = 1
+            screen.blit(bg, (0, 0))
+            text1 = get_font(12).render('Нажми на любую кнопку,', True, pg.Color((brightness,) * 3))
+            text2 = get_font(12).render('чтобы продолжить', True, pg.Color((brightness,) * 3))
+            screen.blit(text1, (120, 0))
+            screen.blit(text2, (150, 15))
         pg.display.flip()
         clock.tick(60)
     pgquit()

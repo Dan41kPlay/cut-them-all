@@ -9,8 +9,8 @@ import pygame as pg
 
 
 __all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'CUR_LEVEL_PROGRESS_PATH', 'START_IMG_PATH', 'MENU_IMG_PATH', 'ANIM_IMG_PATH',
-           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images',
-           'animation', 'get_font', 'pgquit', 'pg']
+           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images', 'planet_image',
+           'animate', 'get_font', 'pgquit', 'pg']
 
 
 pg.init()
@@ -49,10 +49,10 @@ def rotate(img, pos, angle):
     return pg.transform.rotate(img2, angle)
 
 
-def animation(screen, center, rotations=1):
+def animate(screen, image, center, size, rotations=1):
     for i in range(int(360 * rotations)):
-        im = pg.transform.scale(planet_image, (250, 250))
-        im = rotate(im, (125, 127), i)
+        im = pg.transform.scale(image, (size, size))
+        im = rotate(im, (size // 2, size // 2), i)
         rect = im.get_rect()
         rect.center = center
         screen.blit(im, rect)
@@ -60,17 +60,17 @@ def animation(screen, center, rotations=1):
         sleep(0.001)
 
 
-def get_font(size: int):
-    return pg.font.Font(FONT_PATH, size)
+def get_font(size: int, style=FONT_PATH):
+    return pg.font.Font(style, size)
 
 
 def pgquit():
     size = 300, 350
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'DТA! - Закрывается...')
-    text = get_font(25).render('Схоранение...', True, pg.Color('#ffffff'))
+    text = get_font(25).render('Сохранение...', True, pg.Color('#ffffff'))
     screen.blit(text, text.get_rect(centerx=150, y=15))
-    anim = Thread(target=animation, args=(screen, (150, 200)))
+    anim = Thread(target=animate, args=(screen, planet_image, (150, 200), 250))
     anim.start()
     with open(CUR_LEVEL_PATH, 'w') as file:
         file.write(','.join(map(str, current_level[:2])))

@@ -215,7 +215,7 @@ def main(go_to=None, level_up=True) -> None:
             with open(CUR_LEVEL_PATH, 'w') as file:
                 file.write(','.join(map(str, current_level[:2])))
             pg.display.flip()
-            animation(screen, (150, 250), 2)
+            animate(screen, planet_image, (150, 250), 250, 2)
             pg.display.set_caption(f'DTA! - Ур. {current_level[(not level_up) + 1]}')
             sprite_group = pg.sprite.Group()
             board.generate_level(load_level(current_level[(not level_up) + 1]), images)
