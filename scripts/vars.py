@@ -67,8 +67,8 @@ def get_font(size: int):
 def pgquit():
     size = 300, 350
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'{game_name} - Closing...')
-    text = get_font(25).render('Saving & closing...', True, pg.Color('#ffffff'))
+    pg.display.set_caption(f'DТA! - Закрывается...')
+    text = get_font(25).render('Схоранение...', True, pg.Color('#ffffff'))
     screen.blit(text, text.get_rect(centerx=150, y=15))
     anim = Thread(target=animation, args=(screen, (150, 200)))
     anim.start()

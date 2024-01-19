@@ -117,14 +117,14 @@ def main(go_to=None, level_up=True) -> None:
         level_up = True
     size = 300, 400
     screen = pg.display.set_mode(size)
-    pg.display.set_caption(f'DTA! - Level {current_level[(not level_up) + 1]}')
+    pg.display.set_caption(f'DTA! - Уровень {current_level[(not level_up) + 1]}')
     board = Board(5, 5)
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[(not level_up) + 1], level_up), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
-    text2 = get_font(20).render('Menu', True, pg.Color('#ffffff'))
-    text3 = get_font(20).render('Restart', True, pg.Color('#ffffff'))
-    text4 = get_font(20).render('completed in              !', True, pg.Color('#00ffff'))
+    text2 = get_font(20).render('Меню', True, pg.Color('#ffffff'))
+    text3 = get_font(20).render('Рестарт', True, pg.Color('#ffffff'))
+    text4 = get_font(20).render('выполнен за               !', True, pg.Color('#00ffff'))
     text4c = text4.copy()
     a_surf = pg.Surface(text4c.get_size(), pg.SRCALPHA)
     alpha = 0
@@ -171,7 +171,7 @@ def main(go_to=None, level_up=True) -> None:
             seconds += 1
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        text1 = get_font(25).render(f'Level {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'All levels',
+        text1 = get_font(25).render(f'Ур. {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'Все уровни',
                                     True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
         if won:
@@ -216,7 +216,7 @@ def main(go_to=None, level_up=True) -> None:
                 file.write(','.join(map(str, current_level[:2])))
             pg.display.flip()
             animation(screen, (150, 250), 2)
-            pg.display.set_caption(f'DTA! - Level {current_level[(not level_up) + 1]}')
+            pg.display.set_caption(f'DTA! - Ур. {current_level[(not level_up) + 1]}')
             sprite_group = pg.sprite.Group()
             board.generate_level(load_level(current_level[(not level_up) + 1]), images)
             second, seconds = perf_counter(), 0
@@ -227,14 +227,14 @@ def main(go_to=None, level_up=True) -> None:
             mouse_pos = pg.mouse.get_pos()
             if 165 <= mouse_pos[0] <= 285:
                 if 25 <= mouse_pos[1] <= 55:
-                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 23, 124, 34),2, 17)
+                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 23, 124, 34),2, 12)
                 if 65 <= mouse_pos[1] <= 95:
-                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 63, 124, 34), 2, 17)
+                    pg.draw.rect(screen, pg.Color('#00ffff'), (163, 63, 124, 34), 2, 12)
             sprite_group.draw(screen)
             board.render(screen)
-            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 25, 120, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 25, 120, 30), border_radius=10)
             screen.blit(text2, text2.get_rect(centerx=225, y=25))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 65, 120, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (165, 65, 120, 30), border_radius=10)
             screen.blit(text3, text3.get_rect(centerx=225, y=65))
         pg.display.flip()
     if go_to is None or not to_menu:

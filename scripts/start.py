@@ -17,7 +17,7 @@ class Levels:
                     break
                 pg.draw.rect(screen, pg.Color('#000f3f' if self.get_level((x, y)) > current_level[1] else '#001f7f'), (
                     (x + .05) * self.cell_size + self.dx, (y + .05) * self.cell_size + self.dy,
-                    self.cell_size * .95, self.cell_size * .95), border_radius=15)
+                    self.cell_size * .95, self.cell_size * .95), border_radius=10)
                 level_text = get_font(20).render(str(self.get_level((x, y,))), True, pg.Color('#ffffff'))
                 screen.blit(level_text, level_text.get_rect(center=((x + .5) * self.cell_size + self.dx, (y + .5) * self.cell_size + self.dy)))
             else:
@@ -44,32 +44,34 @@ def main_menu():
     levels = Levels(5, 6)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
-             get_font(20).render('Play' + (f'(level {current_level[1]})' if current_level[1] else ''), True, pg.Color('#ffffff')),
-             get_font(20).render('Select level', True, pg.Color('#ffffff')),
-             get_font(20).render('How to play?', True, pg.Color('#ffffff')),
-             get_font(20).render('Reset progress', True, pg.Color('#ffffff')),
-             get_font(20).render('Playing guide', True, pg.Color('#ffffff')),
-             get_font(20).render('Okay, thanks', True, pg.Color('#ffffff')),
-             get_font(20).render('Cancel', True, pg.Color('#ffffff')),
-             get_font(20).render('Good luck!', True, pg.Color('#ffffff'))]
-    controls = ['Controls:',
-                'Everything is done with LMB: to',
-                'select first planet, click on it.',
-                'To cancel selection, click on it',
-                'again. To destroy planets click',
-                'on the second planet.']
+             get_font(20).render('Играть' + (f'(ур. {current_level[1]})' if current_level[1] else ''), True, pg.Color('#ffffff')),
+             get_font(20).render('Выбор уровня', True, pg.Color('#ffffff')),
+             get_font(20).render('Как играть?', True, pg.Color('#ffffff')),
+             get_font(20).render('Сброс прогресса', True, pg.Color('#ffffff')),
+             get_font(20).render('Как играть', True, pg.Color('#ffffff')),
+             get_font(20).render('Хорошо, спасибо', True, pg.Color('#ffffff')),
+             get_font(20).render('Отмена', True, pg.Color('#ffffff')),
+             get_font(20).render('Удачи! =)', True, pg.Color('#ffffff'))]
+    controls = ['Управление:',
+                'Всё делается с помощью ЛКМ:',
+                'чтобы выбрать 1-ю планету,',
+                'нажми на неё. Чтобы отменить',
+                'выбор, нажми на неё ещё раз.',
+                'Чтобы разрушить планеты,',
+                'нажми на 2-ю планету.']
     controls_font = get_font(14)
     guide_font = get_font(14)
-    guide = ['Select two planets of the same',
-             'color to then destroy all',
-             'planets between them. Planets',
-             'must be on one line horizontally,',
-             'vertically or diagonally. Other',
-             'planets can\'t be on the way and',
-             'you can\'t destroy planets one',
-             'by one, so think in advance.',
-             'Destroy all planets in the',
-             'system to complete the level.']
+    guide = ['Выбери две планеты одного',
+             'цвета, чтобы разрушить все',
+             'планеты между ними. Они дол-',
+             'жны быть на одной прямой по',
+             'горизонтали, вертикали или',
+             'диагонали. Другие планеты не',
+             'могут быть на пути, и ты не',
+             'можешь уничтожать их по од-',
+             'ной, поэтому думай наперёд.',
+             'Уничтожь все планеты в сис-',
+             'теме, чтобы пройти уровень.']
     is_guide = False
     level_selection = False
     return_to_main_menu = True
@@ -78,7 +80,7 @@ def main_menu():
         mouse_pos = pg.mouse.get_pos()
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        texts[1] = get_font(20).render(f'Play {f'(level {current_level[1]})' if current_level[1] else ''}', True, pg.Color('#ffffff'))
+        texts[1] = get_font(20).render(f'Играть {f'(ур. {current_level[1]})' if current_level[1] else ''}', True, pg.Color('#ffffff'))
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
@@ -121,40 +123,39 @@ def main_menu():
                 x, y = at_level
                 pg.draw.rect(screen, pg.Color('#00ffff'), (
                     (x + .05) * levels.cell_size + levels.dx - 2, (y + .05) * levels.cell_size + levels.dy - 2,
-                    levels.cell_size * .95 + 4, levels.cell_size * .95 + 4), border_radius=17)
+                    levels.cell_size * .95 + 4, levels.cell_size * .95 + 4), border_radius=12)
         if 40 <= mouse_pos[0] <= 260:
             to_outline = [[*range(360, 391)]] if is_guide or level_selection else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
             found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
             if found:
                 top_left = to_outline[found[0]]
-                pg.draw.rect(screen, pg.Color('#00ffff'), (38, top_left[0] - 2, 224, 34), 2, border_radius=17)
+                pg.draw.rect(screen, pg.Color('#00ffff'), (38, top_left[0] - 2, 224, 34), 2, border_radius=12)
         if is_guide:
             screen.blit(texts[5], texts[5].get_rect(centerx=150))
             text_coord = 30
             for line in guide:
                 string_rendered = guide_font.render(line, 1, pg.Color('#ffffff'))
                 guide_rect = string_rendered.get_rect()
-                text_coord += 2
                 guide_rect.top = text_coord
                 guide_rect.x = 10
                 text_coord += guide_rect.height
                 screen.blit(string_rendered, guide_rect)
             screen.blit(texts[8], texts[8].get_rect(centerx=150, y=310))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=10)
             screen.blit(texts[6], texts[6].get_rect(centerx=150, y=360))
         elif level_selection:
             levels.render(screen)
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 360, 220, 30), border_radius=10)
             screen.blit(texts[7], texts[7].get_rect(centerx=150, y=360))
         else:
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=10)
             screen.blit(texts[1], texts[1].get_rect(centerx=150, y=50))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 90, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 90, 220, 30), border_radius=10)
             screen.blit(texts[2], texts[2].get_rect(centerx=150, y=90))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 130, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 130, 220, 30), border_radius=10)
             screen.blit(texts[3], texts[3].get_rect(centerx=150, y=130))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 170, 220, 30), border_radius=15)
+            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 170, 220, 30), border_radius=10)
             screen.blit(texts[4], texts[4].get_rect(centerx=150, y=170))
             text_coord = 210
             for line in controls:
@@ -192,8 +193,10 @@ def first():
             direction = 1
         screen.fill(pg.Color('#000000'))
         screen.blit(bg, (0, 0))
-        text1 = get_font(12).render('Press any key to continue', True, pg.Color((brightness,) * 3))
-        screen.blit(text1, (100, 0))
+        text1 = get_font(12).render('Нажми на любую кнопку,', True, pg.Color((brightness,) * 3))
+        text2 = get_font(12).render('чтобы продолжить', True, pg.Color((brightness,) * 3))
+        screen.blit(text1, (120, 0))
+        screen.blit(text2, (150, 15))
         pg.display.flip()
         clock.tick(60)
     pgquit()
