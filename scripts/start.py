@@ -182,12 +182,15 @@ def first():
     bar_size = time_ctr = 0
     alpha = 255
     brightness, direction = 0, 1
-    sun_size = (50, 50)
+    sun_size_start, sun_size_end = 50, 4
     sun_rot = 0
+    start_sun_x, start_sun_y = 150, 125
+    end_sun_x, end_sun_y = 18, 77
     clock = pg.time.Clock()
     loading = True
     transitioning = False
     running = True
+
     while running:
         screen.fill(pg.Color('#000000'))
         for event in pg.event.get():
@@ -200,36 +203,38 @@ def first():
             transitioning = True
         if not alpha:
             transitioning = False
+
         if loading:
-            pg.draw.rect(screen, pg.Color('#00ffff'), (48, 176, 204, 24), 2)
-            pg.draw.rect(screen, pg.Color('#00ffff'), (50, 178, bar_size, 20))
-            # sun = rotate(sun, (25, 25), 0.1)
-            # sun = sun_image.copy()
-            # sun = pg.transform.rotate(sun, 255 - alpha)
-            # pg.display.update()
-            # screen.blit(sun, sun.get_rect(center=(150, 125)))
-            # animate(screen, sun_image, (150, 125), (50, 50), 3)
-            img = pg.transform.scale(sun_image, sun_size)
-            img = rotate(img, (sun_size[0] // 2, sun_size[1] // 2), -sun_rot)
+            bar_color = pg.Color(bar_size * 51 // 40, 255 - bar_size * 51 // 80, 255 - bar_size * 51 // 40)
+            pg.draw.rect(screen, bar_color, (48, 176, 204, 24), 2)
+            pg.draw.rect(screen, bar_color, (50, 178, bar_size, 20))
+            img = pg.transform.scale(sun_image, (sun_size_start,) * 2)
+            img = rotate(img, (sun_size_start // 2, sun_size_start // 2), sun_rot)
             screen.blit(img, img.get_rect(center=(150, 125)))
-            pg.display.update()
-            sun_rot += 5
+            sun_rot -= 5
             if bar_size != rand_stutter:
                 bar_size += 2
                 time_ctr = perf_counter()
             if perf_counter() - time_ctr >= 1:
                 bar_size += 2
+
         elif transitioning:
             bg_copy = bg.copy()
-            dark = pg.Surface(bg.get_size()).convert_alpha()
-            dark.fill((0, 0, 0, alpha))
-            bg_copy.blit(dark, (0, 0))
+            dark_bg = pg.Surface(bg.get_size()).convert_alpha()
+            dark_bg.fill((0, 0, 0, alpha))
+            bg_copy.blit(dark_bg, (0, 0))
             screen.blit(bg_copy, (0, 0))
-            bright = pg.Surface((204 * alpha / 264, 24 * alpha // 264)).convert_alpha()
-            bright.fill((0, 0, 0, 255 - alpha))
-            pg.draw.rect(bright, pg.Color(0, 255, 255, alpha), (0, 0, 204, 24))
-            screen.blit(bright, bright.get_rect(center=(150, 188)))
+            bright_bar = pg.Surface((204 * alpha / 264, 24 * alpha // 264)).convert_alpha()
+            bright_bar.fill((0, 0, 0, 255 - alpha))
+            pg.draw.rect(bright_bar, pg.Color(255, 127, 0, alpha), (0, 0, 204, 24))
+            screen.blit(bright_bar, bright_bar.get_rect(center=(150, 188)))
+            sun_cropped = pg.transform.scale(sun_image, (sun_size_start,) * 2)
+            screen.blit(sun_cropped, sun_cropped.get_rect(center=(start_sun_x, start_sun_y)))
+            sun_size_start -= .55
+            start_sun_x = max(start_sun_x - 1.65, end_sun_x)
+            start_sun_y = max(start_sun_y - .6, end_sun_y)
             alpha = max(alpha - 3, 0)
+
         else:
             brightness += direction * 2.5
             if brightness >= 255:

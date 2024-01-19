@@ -111,10 +111,12 @@ class Board:
 
 def main(go_to=None, level_up=True) -> None:
     global sprite_group
+
     if current_level[(not level_up) + 1] > level_amount:
         current_level[(not level_up) + 1] = 0
     if (not level_up) and current_level[2] == current_level[1]:
         level_up = True
+
     size = 300, 400
     screen = pg.display.set_mode(size)
     pg.display.set_caption(f'DTA! - Уровень {current_level[(not level_up) + 1]}')
@@ -122,17 +124,20 @@ def main(go_to=None, level_up=True) -> None:
     sprite_group = pg.sprite.Group()
     board.generate_level(load_level(current_level[(not level_up) + 1], level_up), images)
     bg = pg.transform.scale(pg.image.load(MENU_IMG_PATH), size)
+
     text2 = get_font(20).render('Меню', True, pg.Color('#ffffff'))
     text3 = get_font(20).render('Рестарт', True, pg.Color('#ffffff'))
     text4 = get_font(20).render('выполнен за               !', True, pg.Color('#00ffff'))
     text4c = text4.copy()
     a_surf = pg.Surface(text4c.get_size(), pg.SRCALPHA)
     alpha = 0
+
     clock = pg.time.Clock()
     seconds_x, speed = 25, 10
-    won, need_move = False, False
+    won = need_move = to_menu = False
     second, seconds = perf_counter(), current_level[0] if level_up else 0
-    running, to_menu = True, False
+    running = True
+
     while running:
         if level_up:
             current_level[0] = seconds
@@ -174,6 +179,7 @@ def main(go_to=None, level_up=True) -> None:
         text1 = get_font(25).render(f'Ур. {current_level[(not level_up) + 1]}' if current_level[(not level_up) + 1] else 'Все уровни',
                                     True, pg.Color('#ffffff'))
         screen.blit(text1, (25, 20))
+
         if won:
             if seconds_x < 177:
                 seconds_x = min(seconds_x + speed, 177)
@@ -187,7 +193,8 @@ def main(go_to=None, level_up=True) -> None:
             else:
                 speed = 10
                 need_move = False
-        if not won:
+
+        else:
             if seconds_x > 25:
                 seconds_x = max(seconds_x - speed, 25)
                 speed *= .935
@@ -200,12 +207,14 @@ def main(go_to=None, level_up=True) -> None:
             else:
                 speed = 10
                 need_move = False
+
         text5 = get_font(20).render(f'{seconds // 60:0>2}:{seconds % 60:0>2}', True, pg.Color('#ffffff'))
         screen.blit(text5, (seconds_x, 60))
         if need_move:
             pg.display.flip()
             clock.tick(60)
             continue
+
         if board.check_win():
             if not won:
                 won = True
@@ -223,6 +232,7 @@ def main(go_to=None, level_up=True) -> None:
             if won:
                 won = False
             continue
+
         else:
             mouse_pos = pg.mouse.get_pos()
             if 165 <= mouse_pos[0] <= 285:
@@ -237,6 +247,7 @@ def main(go_to=None, level_up=True) -> None:
             pg.draw.rect(screen, pg.Color('#001f7f'), (165, 65, 120, 30), border_radius=10)
             screen.blit(text3, text3.get_rect(centerx=225, y=65))
         pg.display.flip()
+
     if go_to is None or not to_menu:
         pgquit()
     else:
