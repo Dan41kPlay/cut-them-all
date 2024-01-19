@@ -180,6 +180,7 @@ def first():
     bg = pg.transform.scale(pg.image.load(START_IMG_PATH), size)
     rand_stutter = randint(30, 70) * 2
     bar_size = time_ctr = 0
+    bar_speed = 2
     alpha = 255
     brightness, direction = 0, 1
     sun_size_start, sun_size_end = 50, 4
@@ -196,7 +197,8 @@ def first():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if not loading and event.type in {pg.MOUSEBUTTONDOWN, pg.KEYDOWN, pg.CONTROLLERBUTTONDOWN, pg.CONTROLLERTOUCHPADDOWN, pg.FINGERDOWN}:
+            if (not loading and not transitioning and
+                event.type in {pg.MOUSEBUTTONDOWN, pg.KEYDOWN, pg.CONTROLLERBUTTONDOWN, pg.CONTROLLERTOUCHPADDOWN, pg.FINGERDOWN}):
                 main_menu()
         if bar_size >= 200:
             loading = False
@@ -205,7 +207,7 @@ def first():
             transitioning = False
 
         if loading:
-            bar_color = pg.Color(bar_size * 51 // 40, 255 - bar_size * 51 // 80, 255 - bar_size * 51 // 40)
+            bar_color = pg.Color(int(bar_size * 51 / 40), int(255 - bar_size * 51 / 80), int(255 - bar_size * 51 / 40))
             pg.draw.rect(screen, bar_color, (48, 176, 204, 24), 2)
             pg.draw.rect(screen, bar_color, (50, 178, bar_size, 20))
             img = pg.transform.scale(sun_image, (sun_size_start,) * 2)
@@ -213,10 +215,12 @@ def first():
             screen.blit(img, img.get_rect(center=(150, 125)))
             sun_rot -= 5
             if bar_size != rand_stutter:
-                bar_size += 2
+                bar_size += bar_speed
                 time_ctr = perf_counter()
             if perf_counter() - time_ctr >= 1:
-                bar_size += 2
+                bar_size += bar_speed
+            if bar_size > 163:
+                bar_speed *= .95
 
         elif transitioning:
             bg_copy = bg.copy()
