@@ -23,7 +23,8 @@ class Levels:
                 pg.draw.rect(screen, pg.Color('#000f3f' if self.get_level((x, y)) > current_level[1] else '#001f7f'), (
                     (x + .05) * self.cell_size + self.dx, (y + .05) * self.cell_size + self.dy,
                     self.cell_size * .95, self.cell_size * .95), border_radius=10)
-                level_text = level_font.render(str(self.get_level((x, y,))), True, pg.Color('#ffffff'))
+                level_text = level_font.render(str(self.get_level((x, y,))), True,
+                                               pg.Color('#7f7f7f' if self.get_level((x, y)) > current_level[1] else '#ffffff'))
                 screen.blit(level_text, level_text.get_rect(center=((x + .5) * self.cell_size + self.dx, (y + .5) * self.cell_size + self.dy)))
             else:
                 continue
@@ -96,7 +97,7 @@ def main_menu() -> None:
                             return_to_main_menu = False
                             continue
                         main(main_menu)
-                    elif 90 <= event.pos[1] <= 120:
+                    elif 90 <= event.pos[1] <= 120 and current_level[1]:
                         level_selection = True
                         continue
                     elif 130 <= event.pos[1] <= 160:
@@ -131,7 +132,8 @@ def main_menu() -> None:
                     (x + .05) * levels.cell_size + levels.dx - 2, (y + .05) * levels.cell_size + levels.dy - 2,
                     levels.cell_size * .95 + 4, levels.cell_size * .95 + 4), border_radius=12)
         if 40 <= mouse_pos[0] <= 260:
-            to_outline = [[*range(360, 391)]] if is_guide or level_selection else [[*range(50, 81)], [*range(90, 121)], [*range(130, 161)], [*range(170, 201)]]
+            to_outline = ([[*range(360, 391)]] if is_guide or level_selection else
+                          [[*range(50, 81)], [*range(90, 121)] if current_level[1] else [], [*range(130, 161)], [*range(170, 201)]])
             found = [idx for idx, rng in enumerate(to_outline) if mouse_pos[1] in rng]
             if found:
                 top_left = to_outline[found[0]]
@@ -157,10 +159,12 @@ def main_menu() -> None:
             screen.blit(texts[7], texts[7].get_rect(centerx=150, y=360))
 
         else:
+            if not current_level[1]:
+                texts[2] = get_font(20).render('Выбор уровня', True, pg.Color('#7f7f7f'))
             screen.blit(texts[0], texts[0].get_rect(centerx=150, y=5))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 50, 220, 30), border_radius=10)
             screen.blit(texts[1], texts[1].get_rect(centerx=150, y=50))
-            pg.draw.rect(screen, pg.Color('#001f7f'), (40, 90, 220, 30), border_radius=10)
+            pg.draw.rect(screen, pg.Color('#001f7f' if current_level[1] else '#000f3f'), (40, 90, 220, 30), border_radius=10)
             screen.blit(texts[2], texts[2].get_rect(centerx=150, y=90))
             pg.draw.rect(screen, pg.Color('#001f7f'), (40, 130, 220, 30), border_radius=10)
             screen.blit(texts[3], texts[3].get_rect(centerx=150, y=130))
