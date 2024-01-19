@@ -8,9 +8,10 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame as pg
 
 
-__all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'CUR_LEVEL_PROGRESS_PATH', 'START_IMG_PATH', 'MENU_IMG_PATH', 'ANIM_IMG_PATH',
-           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images', 'planet_image',
-           'animate', 'get_font', 'pgquit', 'pg']
+__all__ = ['FONT_PATH', 'COLORS_PATH', 'LEVELS_PATH', 'CUR_LEVEL_PATH', 'CUR_LEVEL_PROGRESS_PATH',
+           'START_IMG_PATH', 'MENU_IMG_PATH', 'ANIM_IMG_PATH', 'SUN_IMG_PATH',
+           'game_name', 'color_coding', 'sprite_group', 'current_level', 'level_amount', 'images', 'planet_image', 'sun_image',
+           'rotate', 'animate', 'get_font', 'pgquit', 'pg']
 
 
 pg.init()
@@ -22,6 +23,7 @@ CUR_LEVEL_PROGRESS_PATH = os.path.join('data', 'current_level_progress.map')
 START_IMG_PATH = os.path.join('data', 'start.jpg')
 MENU_IMG_PATH = os.path.join('data', 'main_menu_bg.jpg')
 ANIM_IMG_PATH = os.path.join('data', 'planets_round-round.png')
+SUN_IMG_PATH = os.path.join('data', 'sun.png')
 
 game_name = 'Destroy them all!'
 color_coding = {0: '000000', 1: 'ff0000', 2: 'ff7f00', 3: 'ffff00', 4: '00ff00', 5: '00ffff', 6: '0000ff', 7: 'ff00ff'}
@@ -40,6 +42,7 @@ for filename in os.listdir(COLORS_PATH):
     image = pg.image.load(fullname)
     images[filename.split('.')[0]] = pg.transform.scale(image, (45, 45))
 planet_image = pg.transform.scale(pg.image.load(ANIM_IMG_PATH), (150, 150))
+sun_image = pg.transform.scale(pg.image.load(SUN_IMG_PATH), (50, 50))
 
 
 def rotate(img, pos, angle):
@@ -51,11 +54,9 @@ def rotate(img, pos, angle):
 
 def animate(screen, image, center, size, rotations=1):
     for i in range(int(360 * rotations)):
-        im = pg.transform.scale(image, (size, size))
-        im = rotate(im, (size // 2, size // 2), i)
-        rect = im.get_rect()
-        rect.center = center
-        screen.blit(im, rect)
+        img = pg.transform.scale(image, (size, size))
+        img = rotate(img, (size // 2, size // 2), i)
+        screen.blit(img, img.get_rect(center=center))
         pg.display.update()
         sleep(0.001)
 

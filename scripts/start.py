@@ -212,7 +212,7 @@ def first():
             dark.fill((0, 0, 0, alpha))
             bg_copy.blit(dark, (0, 0))
             screen.blit(bg_copy, (0, 0))
-            bright = pg.Surface((204 * alpha / 255, 24 * alpha / 255)).convert_alpha()
+            bright = pg.Surface((204 * alpha / 264, 24 * alpha // 264)).convert_alpha()
             bright.fill((0, 0, 0, 255 - alpha))
             pg.draw.rect(bright, pg.Color(0, 255, 255, alpha), (0, 0, 204, 24))
             screen.blit(bright, bright.get_rect(center=(150, 150)))
