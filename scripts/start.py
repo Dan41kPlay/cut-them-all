@@ -182,6 +182,8 @@ def first():
     bar_size = time_ctr = 0
     alpha = 255
     brightness, direction = 0, 1
+    sun_size = (50, 50)
+    sun_rot = 0
     clock = pg.time.Clock()
     loading = True
     transitioning = False
@@ -199,8 +201,19 @@ def first():
         if not alpha:
             transitioning = False
         if loading:
-            pg.draw.rect(screen, pg.Color('#00ffff'), (48, 138, 204, 24), 2)
-            pg.draw.rect(screen, pg.Color('#00ffff'), (50, 140, bar_size, 20))
+            pg.draw.rect(screen, pg.Color('#00ffff'), (48, 176, 204, 24), 2)
+            pg.draw.rect(screen, pg.Color('#00ffff'), (50, 178, bar_size, 20))
+            # sun = rotate(sun, (25, 25), 0.1)
+            # sun = sun_image.copy()
+            # sun = pg.transform.rotate(sun, 255 - alpha)
+            # pg.display.update()
+            # screen.blit(sun, sun.get_rect(center=(150, 125)))
+            # animate(screen, sun_image, (150, 125), (50, 50), 3)
+            img = pg.transform.scale(sun_image, sun_size)
+            img = rotate(img, (sun_size[0] // 2, sun_size[1] // 2), -sun_rot)
+            screen.blit(img, img.get_rect(center=(150, 125)))
+            pg.display.update()
+            sun_rot += 5
             if bar_size != rand_stutter:
                 bar_size += 2
                 time_ctr = perf_counter()
@@ -215,7 +228,7 @@ def first():
             bright = pg.Surface((204 * alpha / 264, 24 * alpha // 264)).convert_alpha()
             bright.fill((0, 0, 0, 255 - alpha))
             pg.draw.rect(bright, pg.Color(0, 255, 255, alpha), (0, 0, 204, 24))
-            screen.blit(bright, bright.get_rect(center=(150, 150)))
+            screen.blit(bright, bright.get_rect(center=(150, 188)))
             alpha = max(alpha - 3, 0)
         else:
             brightness += direction * 2.5

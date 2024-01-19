@@ -54,8 +54,8 @@ def rotate(img, pos, angle):
 
 def animate(screen, image, center, size, rotations=1):
     for i in range(int(360 * rotations)):
-        img = pg.transform.scale(image, (size, size))
-        img = rotate(img, (size // 2, size // 2), i)
+        img = pg.transform.scale(image, size)
+        img = rotate(img, (size[0] // 2, size[1] // 2), i)
         screen.blit(img, img.get_rect(center=center))
         pg.display.update()
         sleep(0.001)
@@ -71,7 +71,7 @@ def pgquit():
     pg.display.set_caption(f'DТA! - Закрывается...')
     text = get_font(25).render('Сохранение...', True, pg.Color('#ffffff'))
     screen.blit(text, text.get_rect(centerx=150, y=15))
-    anim = Thread(target=animate, args=(screen, planet_image, (150, 200), 250))
+    anim = Thread(target=animate, args=(screen, planet_image, (150, 200), (250, 250)))
     anim.start()
     with open(CUR_LEVEL_PATH, 'w') as file:
         file.write(','.join(map(str, current_level[:2])))
