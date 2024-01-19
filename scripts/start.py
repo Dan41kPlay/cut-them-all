@@ -50,9 +50,9 @@ def main_menu():
     texts = [get_font(25).render(game_name, True, pg.Color('#00ffff')),
              get_font(20).render('Играть' + (f'(ур. {current_level[1]})' if current_level[1] else ''), True, pg.Color('#ffffff')),
              get_font(20).render('Выбор уровня', True, pg.Color('#ffffff')),
-             get_font(20).render('Как играть?', True, pg.Color('#ffffff')),
+             get_font(20).render('Правила игры', True, pg.Color('#ffffff')),
              get_font(20).render('Сброс прогресса', True, pg.Color('#ffffff')),
-             get_font(20).render('Как играть', True, pg.Color('#ffffff')),
+             get_font(20).render('Правила игры', True, pg.Color('#ffffff')),
              get_font(20).render('Хорошо, спасибо', True, pg.Color('#ffffff')),
              get_font(20).render('Отмена', True, pg.Color('#ffffff')),
              get_font(20).render('Удачи! =)', True, pg.Color('#ffffff'))]
