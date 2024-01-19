@@ -134,7 +134,7 @@ def main(go_to=None, level_up=True) -> None:
 
     clock = pg.time.Clock()
     seconds_x, speed = 25, 10
-    won = need_move = to_menu = False
+    won = to_menu = False
     second, seconds = perf_counter(), current_level[0] if level_up else 0
     running = True
 
@@ -181,9 +181,9 @@ def main(go_to=None, level_up=True) -> None:
         screen.blit(text1, (25, 20))
 
         if won:
-            if seconds_x < 177:
-                seconds_x = min(seconds_x + speed, 177)
-                speed *= .935
+            if seconds_x < 190:
+                seconds_x = min(seconds_x + speed, 190)
+                speed *= .94
                 alpha = min(alpha + 4, 255)
                 text4c = text4.copy()
                 a_surf.fill((255, 255, 255, alpha))
@@ -197,7 +197,7 @@ def main(go_to=None, level_up=True) -> None:
         else:
             if seconds_x > 25:
                 seconds_x = max(seconds_x - speed, 25)
-                speed *= .935
+                speed *= .94
                 alpha = max(alpha - 4, 0)
                 text4c = text4.copy()
                 a_surf.fill((255, 255, 255, alpha))
